@@ -1,0 +1,7 @@
+# Ignore Mac OS X specific files
+.DS_STORE
+
+*~*
+*.aux
+*.log
+*\#*
