@@ -1,1 +1,44 @@
 /* This is the main stylesheet */
+
+html,body {
+    height: 100%;
+    width: 100%;
+}
+body {
+    background-color: green;
+}
+
+/* For specific ids */
+#wrapper {
+    height: 100%;
+    width: 100%;
+    position: relative;
+}
+
+#drawtable {
+    background-color: blue;
+    height: 100%;
+
+    position:absolute;
+    right: 0;
+}
+
+#toolbar {
+    background-color: red;
+}
+
+#blueprint {
+    width: 800px;
+    height: 600px;
+}
+
+#sidebar {
+    height: 100%;
+    width: 300px;
+    background-color: orange;
+    z-index: 1;
+
+    position:absolute;
+    top:0;
+    left:0;
+}
