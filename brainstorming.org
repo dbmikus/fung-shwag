@@ -1,0 +1,18 @@
+* Ideas
+** Random image pokemon game
+** Fractal maker
+** meeting management
+** Dota shit
+** Tutorial maker with global screencap
+** Graphing calculator
+** Dorm room designer
+Design room border
+Furniture library
+Create own furniture list
+* COMMENT File configuration (ignore this bullet point)
+# Local Variables:
+# mode: org
+# coding: utf-8
+# eval: (visual-line-mode 1)
+# eval: (org-indent-mode 1)
+# End:
