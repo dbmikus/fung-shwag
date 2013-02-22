@@ -9,9 +9,10 @@ body {
     background-color: orange;
 }
 h2  {
+    margin-left: 20px;
     font-size: 24px;
+    height:38px;
 }
-
 
 /* For specific ids */
 #wrapper {
@@ -20,28 +21,40 @@ h2  {
     position: relative;
 }
 
-#drawtable {
-    position:fixed;
-    height:100%;
-    left: 0px;
-    top: 0px;
-}
 
 #toolbar {
     background-color: red;
 }
 
 #blueprint {
-    width: 100%;
-    height: 100%;
+    z-index: 1;
+    position:fixed;
+    left: 0px;
+    top: 0px;
 }
 
 #sidebar {
     width: 300px;
-    background-color: orange;
-    z-index: 1;
-    text-align:center;
+    color: lightblue;
+    background-color: #001087;
+    z-index: 0;
     position:absolute;
     top:0;
     right:0;
+}
+
+#furniturelist li{
+    margin: 0px;
+    padding: 20px 0px 20px 20px;
+    border-left: 4px solid #001097;
+    border-top: 4px solid #0010a7;
+    border-bottom: 4px solid #001067;
+}
+
+
+#furniturelist li:hover{
+    background: #001077;
+    border-left: 4px solid #001097;
+    border-bottom: 4px solid #0010a7;
+    border-top: 4px solid #001067;
 }
