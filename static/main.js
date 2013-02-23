@@ -7,7 +7,7 @@ var walls = [];
 // [starting X coord, starting y coord, ending x cooord, ending y coord]
 var currentTool="none";
 //used for creating walls
-var firstWallCoord = null;
+var prevWallCoord = null;
 //the offset of the current view from the origin
 var xOffset = 0;
 var yOffset = 0;
@@ -31,7 +31,7 @@ function setUpScreen(){
     });
 }
 
-function setUpBlueprint() {
+function setUpBlueprint(){
     ctx.fillStyle = "#001087"
     ctx.fillRect(0,0,canvas.width,canvas.height);
     ctx.lineWidth =1;
@@ -113,11 +113,11 @@ function drawBlueprint(){
         ctx.stroke();
         ctx.closePath();
     }
-    if(firstWallCoord){
+    if(prevWallCoord){
         ctx.strokeStyle = "black";
         ctx.fillStyle= "red";
-        drawRoundedRectangle(ctx, ((firstWallCoord[0]+xOffset)*scale)-scale/4,
-                                ((firstWallCoord[1]+yOffset)*scale)-scale/4,
+        drawRoundedRectangle(ctx, ((prevWallCoord[0]+xOffset)*scale)-scale/4,
+                                ((prevWallCoord[1]+yOffset)*scale)-scale/4,
                                 scale/2, scale/2,scale/4)
     }
 
@@ -151,36 +151,38 @@ function onMouseDown(event){
         }
     }
     if(mouseX>0 && mouseX<40
-        && mouseY> 320 && mouseY<420){
+       && mouseY> 320 && mouseY<420){
         xOffset+= 4;
         drawBlueprint();
         return;
     }
     if(mouseX>820 && mouseX<920
-        && mouseY>canvas.height-40 && mouseY<canvas.height){
+       && mouseY>canvas.height-40 && mouseY<canvas.height){
         yOffset-= 4;
         drawBlueprint();
         return;
     }
     if(mouseX>canvas.width-40 && mouseX<canvas.width
-        && mouseY> 320 && mouseY<420){
+       && mouseY> 320 && mouseY<420){
         xOffset-= 4;
         drawBlueprint();
         return;
     }
-
     if(currentTool==="drawWall"){
-        if(firstWallCoord===null){
-            firstWallCoord= [Math.round(mouseX/scale)+xOffset,
-                    Math.round(mouseY/scale)+yOffset];
+        if(prevWallCoord===null){
+            prevWallCoord= [Math.round(mouseX/scale)-xOffset,
+                    Math.round(mouseY/scale)-yOffset];
         }else{
-            walls.push([firstWallCoord[0],firstWallCoord[1],
-                Math.round(mouseX/scale)+xOffset,Math.round(mouseY/scale)+yOffset]);
-            firstWallCoord=null;
+            var newWallCoord = [Math.round(mouseX/scale)-xOffset,
+                        Math.round(mouseY/scale)-yOffset]
+            walls.push([prevWallCoord[0],prevWallCoord[1],
+                newWallCoord[0],newWallCoord[1]]);
+            prevWallCoord=newWallCoord;
         }
         drawBlueprint();
+    }else{
+        prevWallCoord = null;
     }
-
 }
 
 
