@@ -7,145 +7,145 @@ var walls = [];
 // [starting X coord, starting y coord, ending x cooord, ending y coord]
 var currentTool="none";
 //used for creating walls
-var firstWallCoord = null;
+var prevWallCoord = null;
 //the offset of the current view from the origin
 var xOffset = 0;
 var yOffset = 0;
 
 function main() {
-	canvas.addEventListener("mousedown", onMouseDown, false);
-	setUpScreen();
+    canvas.addEventListener("mousedown", onMouseDown, false);
+    setUpScreen();
 }
 
 
 //binds ready and resize so that the canvas is alway sthe right side
 //called in main
 function setUpScreen(){
-	$(document).ready(function(){
-		$('#blueprint').attr({width: $(window).width()-300, height: $(window).height()});
-		drawBlueprint();	
+    $(document).ready(function(){
+        $('#blueprint').attr({width: $(window).width()-300, height: $(window).height()});
+        drawBlueprint();    
 });
-	$(window).resize(function(){
-		$('#blueprint').attr({width: $(window).width()-300, height: $(window).height()});
-		drawBlueprint();
-	});
+    $(window).resize(function(){
+        $('#blueprint').attr({width: $(window).width()-300, height: $(window).height()});
+        drawBlueprint();
+    });
 }
 
 
 function setUpBlueprint(){
-	ctx.fillStyle = "#001087"
-	ctx.fillRect(0,0,canvas.width,canvas.height);
-	ctx.lineWidth =1;
+    ctx.fillStyle = "#001087"
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.lineWidth =1;
 
-	for(var i = 0; i< (canvas.width)/scale; i++){
-		if (i%4 === 0){
-			ctx.strokeStyle="lightblue"
-		}else
-			ctx.strokeStyle = "blue"; 
-		ctx.beginPath();
-		ctx.moveTo(i*scale,0);
-		ctx.lineTo(i*scale,canvas.height);
-		ctx.stroke();
-		ctx.closePath();
-	}
-	for(var i = 0; i< (canvas.height)/scale; i++){
-		if (i%4 === 0){
-			ctx.strokeStyle="lightblue"
-		}else
-			ctx.strokeStyle = "blue"; 
-		
-		ctx.beginPath();
-		ctx.moveTo(0,i*scale);
-		ctx.lineTo(canvas.width,i*scale);
-		ctx.stroke();
-		ctx.closePath();
-	}
+    for(var i = 0; i< (canvas.width)/scale; i++){
+        if (i%4 === 0){
+            ctx.strokeStyle="lightblue"
+        }else
+            ctx.strokeStyle = "blue"; 
+        ctx.beginPath();
+        ctx.moveTo(i*scale,0);
+        ctx.lineTo(i*scale,canvas.height);
+        ctx.stroke();
+        ctx.closePath();
+    }
+    for(var i = 0; i< (canvas.height)/scale; i++){
+        if (i%4 === 0){
+            ctx.strokeStyle="lightblue"
+        }else
+            ctx.strokeStyle = "blue"; 
+        
+        ctx.beginPath();
+        ctx.moveTo(0,i*scale);
+        ctx.lineTo(canvas.width,i*scale);
+        ctx.stroke();
+        ctx.closePath();
+    }
 
 }
 
 function drawButtons(){
-	ctx.fillStyle = "#0010a7";
-	if(currentTool==="drawWall"){
-		ctx.fillStyle= "purple";
-	}
-	ctx.lineWidth= 4;
-	ctx.strokeStyle= "#001067";
-	drawRoundedRectangle(ctx,40,-20,200,60,10);
-	ctx.fillStyle="lightblue";
+    ctx.fillStyle = "#0010a7";
+    if(currentTool==="drawWall"){
+        ctx.fillStyle= "purple";
+    }
+    ctx.lineWidth= 4;
+    ctx.strokeStyle= "#001067";
+    drawRoundedRectangle(ctx,40,-20,200,60,10);
+    ctx.fillStyle="lightblue";
     ctx.font = "35px Arial";
-	ctx.fillText("Draw Walls",55,30);
+    ctx.fillText("Draw Walls",55,30);
 
-	ctx.fillStyle = "#0010a7"
-	ctx.lineWidth= 4;
-	ctx.strokeStyle= "#001067"
-	drawRoundedRectangle(ctx,280,-20,200,60,10);
-	ctx.fillStyle="lightblue";
+    ctx.fillStyle = "#0010a7"
+    ctx.lineWidth= 4;
+    ctx.strokeStyle= "#001067"
+    drawRoundedRectangle(ctx,280,-20,200,60,10);
+    ctx.fillStyle="lightblue";
     ctx.font = "35px Arial";
-	ctx.fillText("Zoom Out",303,30);
+    ctx.fillText("Zoom Out",303,30);
 
-	ctx.fillStyle = "#0010a7"
-	ctx.lineWidth= 4;
-	ctx.strokeStyle= "#001067"
-	drawRoundedRectangle(ctx,520,-20,200,60,10);
-	ctx.fillStyle="lightblue";
+    ctx.fillStyle = "#0010a7"
+    ctx.lineWidth= 4;
+    ctx.strokeStyle= "#001067"
+    drawRoundedRectangle(ctx,520,-20,200,60,10);
+    ctx.fillStyle="lightblue";
     ctx.font = "35px Arial";
-	ctx.fillText("Zoom In",560,30);
+    ctx.fillText("Zoom In",560,30);
 
-	ctx.fillStyle = "#0010a7"
-	ctx.lineWidth= 4;
-	ctx.strokeStyle= "#001067"
-	drawRoundedRectangle(ctx,820,-20,100,60,10);
-	ctx.fillStyle="lightblue";
+    ctx.fillStyle = "#0010a7"
+    ctx.lineWidth= 4;
+    ctx.strokeStyle= "#001067"
+    drawRoundedRectangle(ctx,820,-20,100,60,10);
+    ctx.fillStyle="lightblue";
     ctx.font = "40px Arial";
-	ctx.fillText("▲",850,32);
+    ctx.fillText("▲",850,32);
 
-	ctx.fillStyle = "#0010a7"
-	ctx.lineWidth= 4;
-	ctx.strokeStyle= "#001067"
-	drawRoundedRectangle(ctx,-20,320,60,100,10);
-	ctx.fillStyle="lightblue";
+    ctx.fillStyle = "#0010a7"
+    ctx.lineWidth= 4;
+    ctx.strokeStyle= "#001067"
+    drawRoundedRectangle(ctx,-20,320,60,100,10);
+    ctx.fillStyle="lightblue";
     ctx.font = "40px Arial";
-	ctx.fillText("◄",0,385);
+    ctx.fillText("◄",0,385);
 
-	ctx.fillStyle = "#0010a7"
-	ctx.lineWidth= 4;
-	ctx.strokeStyle= "#001067"
-	drawRoundedRectangle(ctx,820,canvas.height-40,100,canvas.height+20,10);
-	ctx.fillStyle="lightblue";
+    ctx.fillStyle = "#0010a7"
+    ctx.lineWidth= 4;
+    ctx.strokeStyle= "#001067"
+    drawRoundedRectangle(ctx,820,canvas.height-40,100,canvas.height+20,10);
+    ctx.fillStyle="lightblue";
     ctx.font = "40px Arial";
-	ctx.fillText("▼",850,canvas.height-6);
+    ctx.fillText("▼",850,canvas.height-6);
 
-	ctx.fillStyle = "#0010a7"
-	ctx.lineWidth= 4;
-	ctx.strokeStyle= "#001067"
-	drawRoundedRectangle(ctx,canvas.width-40,320,60,100,10);
-	ctx.fillStyle="lightblue";
+    ctx.fillStyle = "#0010a7"
+    ctx.lineWidth= 4;
+    ctx.strokeStyle= "#001067"
+    drawRoundedRectangle(ctx,canvas.width-40,320,60,100,10);
+    ctx.fillStyle="lightblue";
     ctx.font = "40px Arial";
-	ctx.fillText("►",canvas.width-35,385);
+    ctx.fillText("►",canvas.width-35,385);
 
 }
 
 function drawBlueprint(){
-	setUpBlueprint();
+    setUpBlueprint();
 
-	for (var i =0; i<walls.length; i++){
-		ctx.lineWidth= 5;
-		ctx.strokeStyle="white"
-		ctx.beginPath();
-		ctx.moveTo((walls[i][0]+xOffset)*scale,(walls[i][1]+yOffset)*scale);
-		ctx.lineTo((walls[i][2]+xOffset)*scale,(walls[i][3]+yOffset)*scale);
-		ctx.stroke();
-		ctx.closePath();
-	}
-	if(firstWallCoord){
-		ctx.strokeStyle = "black";
-		ctx.fillStyle= "red";
-		drawRoundedRectangle(ctx, ((firstWallCoord[0]+xOffset)*scale)-scale/4,
-								((firstWallCoord[1]+yOffset)*scale)-scale/4,
-								scale/2, scale/2,scale/4)
-	}
+    for (var i =0; i<walls.length; i++){
+        ctx.lineWidth= 5;
+        ctx.strokeStyle="white"
+        ctx.beginPath();
+        ctx.moveTo((walls[i][0]+xOffset)*scale,(walls[i][1]+yOffset)*scale);
+        ctx.lineTo((walls[i][2]+xOffset)*scale,(walls[i][3]+yOffset)*scale);
+        ctx.stroke();
+        ctx.closePath();
+    }
+    if(prevWallCoord){
+        ctx.strokeStyle = "black";
+        ctx.fillStyle= "red";
+        drawRoundedRectangle(ctx, ((prevWallCoord[0]+xOffset)*scale)-scale/4,
+                                ((prevWallCoord[1]+yOffset)*scale)-scale/4,
+                                scale/2, scale/2,scale/4)
+    }
 
-	drawButtons();
+    drawButtons();
 }
 
 
@@ -166,70 +166,74 @@ function drawRoundedRectangle(ctx,x,y,width,height,radius){
 
 
 function onMouseDown(event){
-	var mouseX = event.x;
-	var mouseY = event.y;
-	if(mouseY>0 && mouseY<40){
-		if(mouseX>40 && mouseX<240){
-			if (currentTool==="drawWall"){
-				currentTool = "none"
-				firstWallCoord= null;
-			}
-			else
-				currentTool="drawWall";
-			drawBlueprint();
-			return;
-		}
-		else if(mouseX>280 && mouseX<480){
-			currentTool="none";
-			if(scale>10)
-				scale-=10;
-			drawBlueprint();
-			return;
-		}
-		else if(mouseX>520 && mouseX<720){
-			currentTool="none";
-			if(scale<80)
-				scale+=10;
-			drawBlueprint();
-			return;
+    var mouseX = event.x;
+    var mouseY = event.y;
+    if(mouseY>0 && mouseY<40){
+        if(mouseX>40 && mouseX<240){
+            if (currentTool==="drawWall"){
+                currentTool = "none"
+                prevWallCoord= null;
+            }
+            else
+                currentTool="drawWall";
+            drawBlueprint();
+            return;
+        }
+        else if(mouseX>280 && mouseX<480){
+            currentTool="none";
+            if(scale>10)
+                scale-=10;
+            drawBlueprint();
+            return;
+        }
+        else if(mouseX>520 && mouseX<720){
+            currentTool="none";
+            if(scale<80)
+                scale+=10;
+            drawBlueprint();
+            return;
 
-			return;
-		}
-		else if(mouseX>820 && mouseX<920){
-			yOffset+= 4;
-			drawBlueprint();
-			return;
-		}
-	}
-	if(mouseX>0 && mouseX<40
-		&& mouseY> 320 && mouseY<420){
-		xOffset+= 4;
-		drawBlueprint();
-		return;
-	}
-	if(mouseX>820 && mouseX<920
-		&& mouseY>canvas.height-40 && mouseY<canvas.height){
-		yOffset-= 4;
-		drawBlueprint();
-		return;
-	}
-	if(mouseX>canvas.width-40 && mouseX<canvas.width
-		&& mouseY> 320 && mouseY<420){
-		xOffset-= 4;
-		drawBlueprint();
-		return;
-	}
-	if(currentTool==="drawWall"){
-		if(firstWallCoord===null){
-			firstWallCoord= [Math.round(mouseX/scale)+xOffset,
-					Math.round(mouseY/scale)+yOffset];
-		}else{
-			walls.push([firstWallCoord[0],firstWallCoord[1],
-				Math.round(mouseX/scale)+xOffset,Math.round(mouseY/scale)+yOffset]);
-			firstWallCoord=null;
-		}
-		drawBlueprint();
-	}
+            return;
+        }
+        else if(mouseX>820 && mouseX<920){
+            yOffset+= 4;
+            drawBlueprint();
+            return;
+        }
+    }
+    if(mouseX>0 && mouseX<40
+        && mouseY> 320 && mouseY<420){
+        xOffset+= 4;
+        drawBlueprint();
+        return;
+    }
+    if(mouseX>820 && mouseX<920
+        && mouseY>canvas.height-40 && mouseY<canvas.height){
+        yOffset-= 4;
+        drawBlueprint();
+        return;
+    }
+    if(mouseX>canvas.width-40 && mouseX<canvas.width
+        && mouseY> 320 && mouseY<420){
+        xOffset-= 4;
+        drawBlueprint();
+        return;
+    }
+    if(currentTool==="drawWall"){
+        if(prevWallCoord===null){
+            prevWallCoord= [Math.round(mouseX/scale)-xOffset,
+                    Math.round(mouseY/scale)-yOffset];
+        }else{
+            var newWallCoord = [Math.round(mouseX/scale)-xOffset,
+                        Math.round(mouseY/scale)-yOffset]
+            walls.push([prevWallCoord[0],prevWallCoord[1],
+                newWallCoord[0],newWallCoord[1]]);
+            prevWallCoord=newWallCoord;
+        }
+        drawBlueprint();
+    }else{
+        prevWallCoord = null;
+    }
 
 }
 
