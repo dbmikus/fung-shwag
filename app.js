@@ -10,8 +10,8 @@ var fs = require("fs");
 // body of a request
 app.use(express.bodyParser());
 
-// The global datastore for this example
-var path;
+// The global datastore for all rooms
+var rooms;
 
 // Asynchronously read file contents, then call callbackFn
 function readFile(filename, defaultData, callbackFn) {
@@ -38,40 +38,43 @@ function writeFile(filename, data, callbackFn) {
   });
 }
 
-// get all items
-app.get("/path", function(request, response){
-});
-
 // get one item
-app.get("/path/:id", function(request, response){
+app.get("/room/:id", function(request, response){
+  var id = request.params.id;
+  var room = rooms[id];
+  response.send({
+    room: room,
+    success: true;
+  })
 });
 
 // create new item
-app.post("/path", function(request, response) {
+app.post("/room", function(request, response) {
 });
 
 // update one item
-app.put("/path/:id", function(request, response){
+app.put("/room/:id", function(request, response){
 });
 
 // delete entire list
-app.delete("/path", function(request, response){
+app.delete("/room", function(request, response){
 });
 
-// delete one item
-app.delete("/path/:id", function(request, response){
-});
 
 // This is for serving files in the static directory
 app.get("/static/:staticFilename", function (request, response) {
     response.sendfile("static/" + request.params.staticFilename);
 });
 
+app.get("/", function (request,response){
+    response.sendfile("static/index.html");
+})
+
 function initServer() {
   // When we start the server, we must load the stored data
   var defaultList = "[]";
   readFile("data.txt", defaultList, function(err, data) {
-    path = JSON.parse(data);
+    rooms = JSON.parse(data);
   });
 }
 
