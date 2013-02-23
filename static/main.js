@@ -23,14 +23,13 @@ function main() {
 function setUpScreen(){
     $(document).ready(function(){
         $('#blueprint').attr({width: $(window).width()-300, height: $(window).height()});
-        drawBlueprint();    
+        drawBlueprint();
 });
     $(window).resize(function(){
         $('#blueprint').attr({width: $(window).width()-300, height: $(window).height()});
         drawBlueprint();
     });
 }
-
 
 function setUpBlueprint(){
     ctx.fillStyle = "#001087"
@@ -41,7 +40,7 @@ function setUpBlueprint(){
         if (i%4 === 0){
             ctx.strokeStyle="lightblue"
         }else
-            ctx.strokeStyle = "blue"; 
+            ctx.strokeStyle = "blue";
         ctx.beginPath();
         ctx.moveTo(i*scale,0);
         ctx.lineTo(i*scale,canvas.height);
@@ -52,15 +51,14 @@ function setUpBlueprint(){
         if (i%4 === 0){
             ctx.strokeStyle="lightblue"
         }else
-            ctx.strokeStyle = "blue"; 
-        
+            ctx.strokeStyle = "blue";
+
         ctx.beginPath();
         ctx.moveTo(0,i*scale);
         ctx.lineTo(canvas.width,i*scale);
         ctx.stroke();
         ctx.closePath();
     }
-
 }
 
 function drawButtons(){
@@ -68,28 +66,6 @@ function drawButtons(){
     if(currentTool==="drawWall"){
         ctx.fillStyle= "purple";
     }
-    ctx.lineWidth= 4;
-    ctx.strokeStyle= "#001067";
-    drawRoundedRectangle(ctx,40,-20,200,60,10);
-    ctx.fillStyle="lightblue";
-    ctx.font = "35px Arial";
-    ctx.fillText("Draw Walls",55,30);
-
-    ctx.fillStyle = "#0010a7"
-    ctx.lineWidth= 4;
-    ctx.strokeStyle= "#001067"
-    drawRoundedRectangle(ctx,280,-20,200,60,10);
-    ctx.fillStyle="lightblue";
-    ctx.font = "35px Arial";
-    ctx.fillText("Zoom Out",303,30);
-
-    ctx.fillStyle = "#0010a7"
-    ctx.lineWidth= 4;
-    ctx.strokeStyle= "#001067"
-    drawRoundedRectangle(ctx,520,-20,200,60,10);
-    ctx.fillStyle="lightblue";
-    ctx.font = "35px Arial";
-    ctx.fillText("Zoom In",560,30);
 
     ctx.fillStyle = "#0010a7"
     ctx.lineWidth= 4;
@@ -165,57 +141,30 @@ function drawRoundedRectangle(ctx,x,y,width,height,radius){
     ctx.stroke();
 }
 
-
 function onMouseDown(event){
     var mouseX = event.x;
     var mouseY = event.y;
     if(mouseY>0 && mouseY<40){
-        if(mouseX>40 && mouseX<240){
-            if (currentTool==="drawWall"){
-                currentTool = "none"
-                prevWallCoord= null;
-            }
-            else
-                currentTool="drawWall";
-            drawBlueprint();
-            return;
-        }
-        else if(mouseX>280 && mouseX<480){
-            currentTool="none";
-            if(scale>10)
-                scale-=10;
-            drawBlueprint();
-            return;
-        }
-        else if(mouseX>520 && mouseX<720){
-            currentTool="none";
-            if(scale<80)
-                scale+=10;
-            drawBlueprint();
-            return;
-
-            return;
-        }
-        else if(mouseX>820 && mouseX<920){
+        if(mouseX>820 && mouseX<920){
             yOffset+= 4;
             drawBlueprint();
             return;
         }
     }
     if(mouseX>0 && mouseX<40
-        && mouseY> 320 && mouseY<420){
+       && mouseY> 320 && mouseY<420){
         xOffset+= 4;
         drawBlueprint();
         return;
     }
     if(mouseX>820 && mouseX<920
-        && mouseY>canvas.height-40 && mouseY<canvas.height){
+       && mouseY>canvas.height-40 && mouseY<canvas.height){
         yOffset-= 4;
         drawBlueprint();
         return;
     }
     if(mouseX>canvas.width-40 && mouseX<canvas.width
-        && mouseY> 320 && mouseY<420){
+       && mouseY> 320 && mouseY<420){
         xOffset-= 4;
         drawBlueprint();
         return;
@@ -235,8 +184,48 @@ function onMouseDown(event){
     }else{
         prevWallCoord = null;
     }
-
 }
 
+
+// Tool stuff
+function toggleWallTool(event) {
+    if (currentTool === "drawWall") {
+        currentTool = "none";
+    } else {
+        currentTool = "drawWall";
+    }
+
+    // This is necessary if toggling the wall tool changes anything on
+    // the canvas
+    drawBlueprint();
+}
+
+function zoomOut(event) {
+    if(scale>10)
+        scale-=10;
+    drawBlueprint();
+}
+
+function zoomIn(event) {
+    if(scale<80)
+        scale+=10;
+    drawBlueprint();
+}
+
+// Adding listeners to tool buttons
+$(document).ready(function() {
+    // Adding listeners for all the tool buttons
+
+    // Clicking on the wall_tool button toggles the wall drawing function
+    $("#wall_tool").click(toggleWallTool);
+
+    // Clicking on the zoom out button zooms out, but does not change
+    // current tool
+    $("#zoom_out").click(zoomOut);
+
+    // Clicking on the zoom out button zooms out, but does not change
+    // current tool
+    $("#zoom_in").click(zoomIn);
+});
 
 main();
