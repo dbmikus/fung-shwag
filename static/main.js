@@ -115,6 +115,7 @@ function drawBlueprint(){
     }
     if(prevWallCoord){
         ctx.strokeStyle = "black";
+        ctx.lineWidth   = 1;
         ctx.fillStyle= "red";
         drawRoundedRectangle(ctx, ((prevWallCoord[0]+xOffset)*scale)-scale/4,
                                 ((prevWallCoord[1]+yOffset)*scale)-scale/4,
