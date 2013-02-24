@@ -38,22 +38,45 @@ function writeFile(filename, data, callbackFn) {
   });
 }
 
-// get one item
+// get a room
 app.get("/room/:id", function(request, response){
   var id = request.params.id;
+  console.log(rooms);
   var room = rooms[id];
+  console.log(rooms[id]);
   response.send({
     room: room,
-    success: true;
+    success: true
+  });
+});
+
+// from https://developer.mozilla.org/en-US/
+// docs/JavaScript/Reference/Global_Objects/Array/map
+function returnInt(element){
+  return parseInt(element,10);
+}
+
+
+function intList(list){
+  for(var i = 0; i<list.length; i++)
+    list[i]=list[i].map(returnInt) 
+  return list;
+}
+
+// save a room
+app.post("/room/:id", function(request, response){
+  var id = request.params.id;
+  var inputWalls = intList(request.body.sendWalls);
+  var inputFurniture= request.body.sendFurniture;
+  console.log(inputWalls);
+
+  rooms[id]={"walls":inputWalls,
+             "furniture":inputFurniture}
+  writeFile("data.txt", JSON.stringify(rooms));
+  response.send({
+    success: true
   })
-});
 
-// create new item
-app.post("/room", function(request, response) {
-});
-
-// update one item
-app.put("/room/:id", function(request, response){
 });
 
 // delete entire list
@@ -72,8 +95,8 @@ app.get("/", function (request,response){
 
 function initServer() {
   // When we start the server, we must load the stored data
-  var defaultList = "[]";
-  readFile("data.txt", defaultList, function(err, data) {
+  var defaultRooms = "{}";
+  readFile("data.txt", defaultRooms, function(err, data) {
     rooms = JSON.parse(data);
   });
 }

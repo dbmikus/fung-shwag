@@ -3,6 +3,7 @@ var ctx = canvas.getContext("2d");
 //scale = pixels/foot
 var scale = 30;
 var walls = [];
+var furniture = [];
 //walls are stored as 4 tuples in the following way
 // [starting X coord, starting y coord, ending x cooord, ending y coord]
 var currentTool="none";
@@ -22,11 +23,11 @@ function main() {
 //called in main
 function setUpScreen(){
     $(document).ready(function(){
-        $('#blueprint').attr({width: $(window).width()-300, height: $(window).height()});
+        $('#blueprint').attr({width: $(window).width()-300, height: $(window).height()-26});
         drawBlueprint();
 });
     $(window).resize(function(){
-        $('#blueprint').attr({width: $(window).width()-300, height: $(window).height()});
+        $('#blueprint').attr({width: $(window).width()-300, height: $(window).height()-26});
         drawBlueprint();
     });
 }
@@ -143,7 +144,7 @@ function drawRoundedRectangle(ctx,x,y,width,height,radius){
 
 function onMouseDown(event){
     var mouseX = event.x;
-    var mouseY = event.y;
+    var mouseY = event.y - 26; // TODO MAKE THIS NOT CONSTANT
     if(mouseY>0 && mouseY<40){
         if(mouseX>820 && mouseX<920){
             yOffset+= 4;
@@ -191,6 +192,7 @@ function onMouseDown(event){
 function toggleWallTool(event) {
     if (currentTool === "drawWall") {
         currentTool = "none";
+        prevWallCoord = null;
     } else {
         currentTool = "drawWall";
     }
@@ -212,7 +214,34 @@ function zoomIn(event) {
     drawBlueprint();
 }
 
-// Adding listeners to tool buttons
+function loadRoom(){
+    var roomId = $("#load-input").val();
+    $.ajax({
+      type: "get",
+      url: "/room/"+roomId,
+      success: function(data) {
+        walls = data.room["walls"];
+        furniture = data.room["furniture"];
+        drawBlueprint();
+      }
+    });
+}
+
+
+function saveRoom(){
+    var saveName = $("#save-input").val();
+    console.log(walls);
+    $.ajax({
+            type: "post",
+            url: "/room/"+saveName,
+            data: {sendWalls: walls, sendFurniture: furniture},
+            success: function(data) {
+                // todo on good save
+            }
+    });
+}
+
+// Adding listeners to buttons
 $(document).ready(function() {
     // Adding listeners for all the tool buttons
 
@@ -226,6 +255,8 @@ $(document).ready(function() {
     // Clicking on the zoom out button zooms out, but does not change
     // current tool
     $("#zoom_in").click(zoomIn);
+    $("#load").click(loadRoom);
+    $("#save").click(saveRoom);
 });
 
 main();
