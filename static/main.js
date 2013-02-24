@@ -14,7 +14,23 @@ var xOffset = 0;
 var yOffset = 0;
 
 function main() {
-    canvas.addEventListener("mousedown", onMouseDown, false);
+    canvas.addEventListener("mousedown", canvasOnMouseDown, false);
+
+    // Adding listeners for all the tool buttons
+
+    // Clicking on the wall_tool button toggles the wall drawing function
+    $("#wall_tool").click(toggleWallTool);
+
+    // Clicking on the zoom out button zooms out, but does not change
+    // current tool
+    $("#zoom_out").click(zoomOut);
+
+    // Clicking on the zoom out button zooms out, but does not change
+    // current tool
+    $("#zoom_in").click(zoomIn);
+    $("#load").click(loadRoom);
+    $("#save").click(saveRoom);
+
     setUpScreen();
 }
 
@@ -62,11 +78,12 @@ function setUpBlueprint(){
     }
 }
 
+// Draws all of the onscreen buttons
 function drawButtons(){
-    ctx.fillStyle = "#0010a7";
-    if(currentTool==="drawWall"){
-        ctx.fillStyle= "purple";
-    }
+    // ctx.fillStyle = "#0010a7";
+    // if(currentTool==="drawWall"){
+    //     ctx.fillStyle= "purple";
+    // }
 
     ctx.fillStyle = "#0010a7"
     ctx.lineWidth= 4;
@@ -105,6 +122,7 @@ function drawButtons(){
 function drawBlueprint(){
     setUpBlueprint();
 
+    // Drawing each wall in our wall array
     for (var i =0; i<walls.length; i++){
         ctx.lineWidth= 5;
         ctx.strokeStyle="white"
@@ -127,6 +145,7 @@ function drawBlueprint(){
 }
 
 
+
 function drawRoundedRectangle(ctx,x,y,width,height,radius){
     ctx.beginPath();
     ctx.moveTo(x,y+radius);
@@ -142,9 +161,14 @@ function drawRoundedRectangle(ctx,x,y,width,height,radius){
     ctx.stroke();
 }
 
-function onMouseDown(event) {
+
+// Mousedown events registered on the canvas
+function canvasOnMouseDown(event) {
     var mouseX = event.x;
-    var mouseY = event.y - 26; // TODO MAKE THIS NOT CONSTANT
+    // the y coordinate is offset by the height of the toolbar above it.
+    // This effectively makes it so that mousedown events for the canvas use the
+    // canvas's top left as the origin
+    var mouseY = event.y - $("#toolbar").outerHeight(true);
 
 
     // Pan up
@@ -254,21 +278,4 @@ function saveRoom(){
 }
 
 // Adding listeners to buttons
-$(document).ready(function() {
-    // Adding listeners for all the tool buttons
-
-    // Clicking on the wall_tool button toggles the wall drawing function
-    $("#wall_tool").click(toggleWallTool);
-
-    // Clicking on the zoom out button zooms out, but does not change
-    // current tool
-    $("#zoom_out").click(zoomOut);
-
-    // Clicking on the zoom out button zooms out, but does not change
-    // current tool
-    $("#zoom_in").click(zoomIn);
-    $("#load").click(loadRoom);
-    $("#save").click(saveRoom);
-});
-
-main();
+$(document).ready(main);
