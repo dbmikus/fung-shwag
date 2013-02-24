@@ -40,6 +40,32 @@ function drawCircle(ctx, location, color, dimensions) {
     ctx.fill();
 }
 
+function drawEllipse(ctx, location, orientation, color, dimensions) {
+    var x = location[0];
+    var y = location[1];
+    var w = dimensions[0];
+    var h = dimensions[1];
+
+    var kappa = .5522848;
+    ox = (w / 2) * kappa, // control point offset horizontal
+    oy = (h / 2) * kappa, // control point offset vertical
+    xe = x + w,           // x-end
+    ye = y + h,           // y-end
+    xm = x + w / 2,       // x-middle
+    ym = y + h / 2;       // y-middle
+
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(x, ym);
+    ctx.bezierCurveTo(x, ym - oy, xm - ox, y, xm, y);
+    ctx.bezierCurveTo(xm + ox, y, xe, ym - oy, xe, ym);
+    ctx.bezierCurveTo(xe, ym + oy, xm + ox, ye, xm, ye);
+    ctx.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);
+    ctx.closePath();
+    ctx.fill();
+}
+
+
 function drawOval(ctx, location, orientation, color, dimensions){
 	//save the context
 	ctx.save();
@@ -47,7 +73,7 @@ function drawOval(ctx, location, orientation, color, dimensions){
 	//move the origin to where we are drawing
 	ctx.translate(location[0], location[1]);
 	//scale the dimensions so we can make an oval
-	ctx.scale(dimensions[0] * dimensions[1] / 4 , 1);
+	ctx.scale(dimensions[0] / 4 , 1);
 	//rotate the canvas so we get the desired orientation
 	ctx.rotate(orientation);
 
