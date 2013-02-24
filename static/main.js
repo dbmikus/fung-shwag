@@ -3,6 +3,7 @@ var ctx = canvas.getContext("2d");
 //scale = pixels/foot
 var scale = 30;
 var walls = [];
+//furniture is an array of furniture objects
 var furniture = [];
 //walls are stored as 4 tuples in the following way
 // [starting X coord, starting y coord, ending x cooord, ending y coord]
@@ -25,7 +26,7 @@ function main() {
     // current tool
     $("#zoom_out").click(zoomOut);
 
-    // Clicking on the zoom out button zooms out, but does not change
+    // Clicking on the zoom in button zooms in, but does not change
     // current tool
     $("#zoom_in").click(zoomIn);
     $("#load").click(loadRoom);
@@ -49,7 +50,7 @@ function setUpScreen(){
 }
 
 function setUpBlueprint(){
-    ctx.fillStyle = "#001087"
+    ctx.fillStyle = "#1B438C"
     ctx.fillRect(0,0,canvas.width,canvas.height);
     ctx.lineWidth =1;
 
@@ -80,14 +81,14 @@ function setUpBlueprint(){
 
 // Draws all of the onscreen buttons
 function drawButtons(){
-    // ctx.fillStyle = "#0010a7";
+    // ctx.fillStyle = "#1B43AC";
     // if(currentTool==="drawWall"){
     //     ctx.fillStyle= "purple";
     // }
 
-    ctx.fillStyle = "#0010a7"
+    ctx.fillStyle = "#1B43AC"
     ctx.lineWidth= 4;
-    ctx.strokeStyle= "#001067"
+    ctx.strokeStyle= "#1B436C"
     drawRoundedRectangle(ctx,820,-20,100,60,10);
     ctx.fillStyle="lightblue";
     ctx.font = "40px Arial";
@@ -101,17 +102,17 @@ function drawButtons(){
     ctx.font = "40px Arial";
     ctx.fillText("◄",0,385);
 
-    ctx.fillStyle = "#0010a7"
+    ctx.fillStyle = "#1B43AC"
     ctx.lineWidth= 4;
-    ctx.strokeStyle= "#001067"
+    ctx.strokeStyle= "#1B436C"
     drawRoundedRectangle(ctx,820,canvas.height-40,100,canvas.height+20,10);
     ctx.fillStyle="lightblue";
     ctx.font = "40px Arial";
     ctx.fillText("▼",850,canvas.height-6);
 
-    ctx.fillStyle = "#0010a7"
+    ctx.fillStyle = "#1B43AC"
     ctx.lineWidth= 4;
-    ctx.strokeStyle= "#001067"
+    ctx.strokeStyle= "#1B436C"
     drawRoundedRectangle(ctx,canvas.width-40,320,60,100,10);
     ctx.fillStyle="lightblue";
     ctx.font = "40px Arial";
