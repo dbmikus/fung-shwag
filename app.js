@@ -44,7 +44,7 @@ app.get("/room/:id", function(request, response){
   var room = rooms[id];
   response.send({
     room: room,
-    success: true;
+    success: true
   })
 });
 
