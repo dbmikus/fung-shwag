@@ -3,19 +3,33 @@
 <html>
   <head>
     <link href='http://fonts.googleapis.com/css?family=Candal' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="reset.css" media="all">
-    <link rel="stylesheet" type="text/css" href="style.css" media="all">
+    <link rel="stylesheet" type="text/css" href="/static/reset.css" media="all">
+    <link rel="stylesheet" type="text/css" href="/static/style.css" media="all">
   </head>
 
   <body>
 
     <div class="wrapper">
 
-      <canvas id="blueprint" width="600" height="500">
-      </canvas>
+      <div id="bp_container">
+      <div id="toolbar">
+        <button class="tool" id="wall_tool" name="wall_tool">Draw Walls</button>
+        <button class="tool" id="zoom_out" name="zoom_out">Zoom Out</button>
+        <button class="tool" id="zoom_in" name="zoom_in">Zoom In</button>
+      </div>
+
+        <canvas id="blueprint" width="600" height="500">
+        </canvas>
+      </div>
 
       <div id="sidebar">
         <h2> Furniture Selector </h2>
+          <input id="load-input" name="load-name" type="text" placeholder="Load another room"/>
+          <button class="tool" id="load" name="load">Load</button>
+          <br>
+          <input id="save-input" name="save-name" type="text" placeholder="Save this room as"/>
+          <button class="tool" id="save" name="save">Save</button>
+
         <ul id ="furniturelist">
           <li> Yo dowg its a chair yo</li>
           <li> Yo dowg its a chair yo</li>
@@ -48,7 +62,7 @@
     </div>
 
 
-	<script src="jquery-1.9.0.js"></script>
-    <script src="main.js"></script>
+	<script src="static/jquery-1.9.0.js"></script>
+    <script src="static/main.js"></script>
   </body>
 </html>

@@ -10,8 +10,8 @@ var fs = require("fs");
 // body of a request
 app.use(express.bodyParser());
 
-// The global datastore for this example
-var path;
+// The global datastore for all rooms
+var rooms;
 
 // Asynchronously read file contents, then call callbackFn
 function readFile(filename, defaultData, callbackFn) {
@@ -38,40 +38,66 @@ function writeFile(filename, data, callbackFn) {
   });
 }
 
-// get all items
-app.get("/path", function(request, response){
+// get a room
+app.get("/room/:id", function(request, response){
+  var id = request.params.id;
+  console.log(rooms);
+  var room = rooms[id];
+  console.log(rooms[id]);
+  response.send({
+    room: room,
+    success: true
+  });
 });
 
-// get one item
-app.get("/path/:id", function(request, response){
-});
+// from https://developer.mozilla.org/en-US/
+// docs/JavaScript/Reference/Global_Objects/Array/map
+function returnInt(element){
+  return parseInt(element,10);
+}
 
-// create new item
-app.post("/path", function(request, response) {
-});
 
-// update one item
-app.put("/path/:id", function(request, response){
+function intList(list){
+  for(var i = 0; i<list.length; i++)
+    list[i]=list[i].map(returnInt) 
+  return list;
+}
+
+// save a room
+app.post("/room/:id", function(request, response){
+  var id = request.params.id;
+  var inputWalls = intList(request.body.sendWalls);
+  var inputFurniture= request.body.sendFurniture;
+  console.log(inputWalls);
+
+  rooms[id]={"walls":inputWalls,
+             "furniture":inputFurniture}
+  writeFile("data.txt", JSON.stringify(rooms));
+  response.send({
+    success: true
+  })
+
 });
 
 // delete entire list
-app.delete("/path", function(request, response){
+app.delete("/room", function(request, response){
 });
 
-// delete one item
-app.delete("/path/:id", function(request, response){
-});
 
 // This is for serving files in the static directory
 app.get("/static/:staticFilename", function (request, response) {
     response.sendfile("static/" + request.params.staticFilename);
 });
 
+app.get("/", function (request,response){
+    response.sendfile("static/index.html");
+})
+
 function initServer() {
   // When we start the server, we must load the stored data
-  var defaultList = "[]";
-  readFile("data.txt", defaultList, function(err, data) {
-    path = JSON.parse(data);
+  var defaultRooms = "{}";
+  readFile("data.txt", defaultRooms, function(err, data) {
+    rooms = JSON.parse(data);
   });
 }
 

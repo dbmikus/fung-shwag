@@ -26,9 +26,12 @@ h2  {
     background-color: red;
 }
 
-#blueprint {
+#bp_container {
     z-index: 1;
     position:fixed;
+}
+
+#blueprint {
     left: 0px;
     top: 0px;
 }

@@ -1,0 +1,23 @@
+// This is an example of the blueprint so we know how to store objects
+room = {
+    author: "Dylan",
+    date: "however JS does dates",
+    name: "The name of the blueprint",
+
+    // we should have code to check that the wall is a closed form
+    walls: [
+        // this is whatever the fuck Nathan is working on
+    ],
+
+    furniture: [
+        {
+            name: "name of furniture object",
+            description: "description of furniture object",
+            center: {x: 27, y: 28},
+            dimensions: {
+                type: "ELLIPSE or SQUARE",
+                // the rest of the values depend on the type
+            }
+        },
+    ]
+}
