@@ -140,9 +140,11 @@ function drawRoundedRectangle(ctx,x,y,width,height,radius){
     ctx.stroke();
 }
 
-function onMouseDown(event){
+function onMouseDown(event) {
     var mouseX = event.x;
     var mouseY = event.y;
+
+    // Pan up
     if(mouseY>0 && mouseY<40){
         if(mouseX>820 && mouseX<920){
             yOffset+= 4;
@@ -150,24 +152,28 @@ function onMouseDown(event){
             return;
         }
     }
+    // Pan left
     if(mouseX>0 && mouseX<40
        && mouseY> 320 && mouseY<420){
         xOffset+= 4;
         drawBlueprint();
         return;
     }
+    // Pan down
     if(mouseX>820 && mouseX<920
        && mouseY>canvas.height-40 && mouseY<canvas.height){
         yOffset-= 4;
         drawBlueprint();
         return;
     }
+    // Pan right
     if(mouseX>canvas.width-40 && mouseX<canvas.width
        && mouseY> 320 && mouseY<420){
         xOffset-= 4;
         drawBlueprint();
         return;
     }
+
     if(currentTool==="drawWall"){
         if(prevWallCoord===null){
             prevWallCoord= [Math.round(mouseX/scale)-xOffset,
@@ -188,10 +194,13 @@ function onMouseDown(event){
 
 // Tool stuff
 function toggleWallTool(event) {
+    var wallButton = $(event.currentTarget);
     if (currentTool === "drawWall") {
         currentTool = "none";
+        wallButton.css("background-color", "");
     } else {
         currentTool = "drawWall";
+        wallButton.css("background-color", "white");
     }
 
     // This is necessary if toggling the wall tool changes anything on
@@ -199,12 +208,14 @@ function toggleWallTool(event) {
     drawBlueprint();
 }
 
+// Zooms the canvas out
 function zoomOut(event) {
     if(scale>10)
         scale-=10;
     drawBlueprint();
 }
 
+// Zooms the canvas out
 function zoomIn(event) {
     if(scale<80)
         scale+=10;
