@@ -49,20 +49,31 @@ function drawEllipse(ctx, location, orientation, color, dimensions) {
     var kappa = .5522848;
     ox = (w / 2) * kappa, // control point offset horizontal
     oy = (h / 2) * kappa, // control point offset vertical
-    xe = x + w,           // x-end
-    ye = y + h,           // y-end
-    xm = x + w / 2,       // x-middle
-    ym = y + h / 2;       // y-middle
+    xe =  w,           // x-end
+    ye =  h,           // y-end
+    xm =  w / 2,       // x-middle
+    ym =  h / 2;       // y-middle
 
     ctx.fillStyle = color;
+	//Move context to the point you are rotating around (the center of your drawing)
+	ctx.translate(location[0], location[1]);
+	//Rotate the canvas(angle in radians)
+	ctx.rotate(orientation);
+	
+	//draw the ellipse
     ctx.beginPath();
-    ctx.moveTo(x, ym);
-    ctx.bezierCurveTo(x, ym - oy, xm - ox, y, xm, y);
-    ctx.bezierCurveTo(xm + ox, y, xe, ym - oy, xe, ym);
+    ctx.moveTo(0, ym);
+    ctx.bezierCurveTo(0, ym - oy, xm - ox, 0, xm, 0);
+    ctx.bezierCurveTo(xm + ox, 0, xe, ym - oy, xe, ym);
     ctx.bezierCurveTo(xe, ym + oy, xm + ox, ye, xm, ye);
-    ctx.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);
+    ctx.bezierCurveTo(xm - ox, ye, 0, ym + oy, 0, ym);
     ctx.closePath();
     ctx.fill();
+	
+	//rotate back
+	ctx.rotate(-(orientation));
+	//restore the canvas origin
+	ctx.restore();
 }
 
 
