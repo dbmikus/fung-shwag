@@ -53,7 +53,9 @@ function drawEllipse(ctx, location, orientation, color, dimensions) {
     ye =  h,           // y-end
     xm =  w / 2,       // x-middle
     ym =  h / 2;       // y-middle
-
+	//save original coordinates
+	ctx.save();
+	
     ctx.fillStyle = color;
 	//Move context to the point you are rotating around (the center of your drawing)
 	ctx.translate(location[0], location[1]);
