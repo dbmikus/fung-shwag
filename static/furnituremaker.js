@@ -40,6 +40,8 @@ function drawCircle(ctx, location, color, dimensions) {
     ctx.fill();
 }
 
+// Source from: http://stackoverflow.com/questions/2172798/how-to-draw-an-oval-in-html5-canvas
+// Author: Steve Tranby on StackOverflow
 function drawEllipse(ctx, location, orientation, color, dimensions) {
     var x = location[0];
     var y = location[1];
