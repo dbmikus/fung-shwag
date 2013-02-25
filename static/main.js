@@ -125,6 +125,7 @@ function drawButtons() {
     drawButton(canvas.width-20, canvas.height/2, 0);
 }
 
+// Draws everything on the blueprint
 function drawBlueprint() {
     setUpBlueprint();
 
@@ -166,26 +167,7 @@ function drawRoundedRectangle(ctx,x,y,width,height,radius) {
 }
 
 
-// Mousedown events registered on the canvas
-function canvasOnMouseDown(event) {
-    var mouseX = event.x;
-    // the y coordinate is offset by the height of the toolbar above it.
-    // This effectively makes it so that mousedown events for the canvas use the
-    // canvas's top left as the origin
-    var mouseY = event.y - $("#toolbar").outerHeight(true);
-
-    // At this point, mouseX and mouseY have their coordinate plane such that
-    // their origin is in the top left of the canvas
-
-    // Drawing top button
-    drawButton(canvas.width/2, 22, 3*Math.PI / 2);
-    // Drawing left button
-    drawButton(20, canvas.height/2, Math.PI);
-    // Drawing bottom button
-    drawButton(canvas.width/2, canvas.height-22, Math.PI/2);
-    // Drawing right button
-    drawButton(canvas.width-20, canvas.height/2, 0);
-
+function checkPanClick(mouseX, mouseY) {
     // Pan up
     // The center of the button's click location
     var bcenter = {"x": canvas.width/2,
@@ -223,22 +205,48 @@ function canvasOnMouseDown(event) {
         drawBlueprint();
         return;
     }
+}
 
-    if(currentTool==="drawWall"){
-        if(prevWallCoord===null){
-            prevWallCoord= [Math.round(mouseX/scale)-xOffset,
-                    Math.round(mouseY/scale)-yOffset];
-        }else{
+function drawWall(mouseX, mouseY) {
+    if (currentTool === "drawWall") {
+        if (prevWallCoord === null) {
+            prevWallCoord = [Math.round(mouseX/scale)-xOffset,
+                            Math.round(mouseY/scale)-yOffset];
+        }
+        else {
             var newWallCoord = [Math.round(mouseX/scale)-xOffset,
-                        Math.round(mouseY/scale)-yOffset]
-            walls.push([prevWallCoord[0],prevWallCoord[1],
-                newWallCoord[0],newWallCoord[1]]);
-            prevWallCoord=newWallCoord;
+                                Math.round(mouseY/scale)-yOffset];
+
+            walls.push([prevWallCoord[0], prevWallCoord[1],
+                        newWallCoord[0], newWallCoord[1]]);
+
+            prevWallCoord = newWallCoord;
         }
         drawBlueprint();
-    }else{
+    }
+    // If we turned off the wall drawing function, then it resets the previous
+    // wall coordinate
+    else {
         prevWallCoord = null;
     }
+}
+
+// Mousedown events registered on the canvas
+function canvasOnMouseDown(event) {
+    var mouseX = event.x;
+    // the y coordinate is offset by the height of the toolbar above it.
+    // This effectively makes it so that mousedown events for the canvas use the
+    // canvas's top left as the origin
+    var mouseY = event.y - $("#toolbar").outerHeight(true);
+
+    // At this point, mouseX and mouseY have their coordinate plane such that
+    // their origin is in the top left of the canvas
+
+    // Checks for clicks on the pan button, and pans canvas viewport if click
+    // cooresponds to a pan button
+    checkPanClick(mouseX, mouseY);
+
+    drawWall(mouseX, mouseY);
 }
 
 
