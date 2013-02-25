@@ -3,6 +3,7 @@ var ctx = canvas.getContext("2d");
 //scale = pixels/foot
 var scale = 30;
 var walls = [];
+//furniture is an array of furniture objects
 var furniture = [];
 //walls are stored as 4 tuples in the following way
 // [starting X coord, starting y coord, ending x cooord, ending y coord]
@@ -25,7 +26,7 @@ function main() {
     // current tool
     $("#zoom_out").click(zoomOut);
 
-    // Clicking on the zoom out button zooms out, but does not change
+    // Clicking on the zoom in button zooms in, but does not change
     // current tool
     $("#zoom_in").click(zoomIn);
     $("#load").click(loadRoom);
@@ -50,7 +51,7 @@ function setUpScreen(){
 
 // Configures the background stuff for the blueprint
 function setUpBlueprint(){
-    ctx.fillStyle = "#001087"
+    ctx.fillStyle = "#1B438C"
     ctx.fillRect(0,0,canvas.width,canvas.height);
     ctx.lineWidth =1;
 
@@ -87,8 +88,10 @@ function setUpBlueprint(){
 function drawButton(x,y, rotation) {
     var bwidth = 50;
     var bheight = 100;
-    var buttonFill = "#0010a7";
+    // var buttonStroke = "#1B436C";
     var buttonStroke = "#001067";
+    // var buttonFill = "#0010a7";
+    var buttonFill = fillStyle = "#1B43AC";
     var blineWidth = 4;
 
     ctx.save();

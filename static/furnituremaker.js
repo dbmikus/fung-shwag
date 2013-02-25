@@ -85,3 +85,38 @@ function drawEllipse(ctx, location, orientation, color, dimensions) {
 	//restore the canvas origin
 	ctx.restore();
 }
+
+function addFurniture( type, mouseX, mouseY, dimensionX, dimensionY, orientation, color ) {
+	
+	furniture.push({
+	'type': type,
+	'location' : [mouseX,mouseY] ,
+	'dimensions': [dimensionX,dimensionY],
+	'orientation': orientation,
+	'color' : color, 
+	
+	})
+	
+}
+//assuming arguments are passed in the form (position of furniture object in furniture array, mode, new value)
+function editFurniture( arguments){
+	var mode = arguments[1];
+	var i = arguments[0];
+	
+	//assuming clicking with this tool activated calls the function properly. 
+	if (mode === 'move') {
+		furniture[i].location = [mouseX,mouseY];
+	}
+	//assuming resize buttons call this function with arguments (i, 'resize', +-x) 
+	if (mode === 'resize') {
+		furniture[i].dimensions = [furniture.dimensions[0] + arguments[2] , furniture.dimensions[1] + arguments[2]];
+	}
+	//assuming after rotation is completed, calls function with arguments (i , 'rotate' , orientation) 
+	if (mode === 'rotate') {
+		furniture[i].orientation = arguments[2];
+	}
+	//assuming button calls with arguments ( i, 'paint', hexcolor)
+	if (mode ==='paint'){
+		furniture[i].color = arguments[2];
+	}
+}
