@@ -166,47 +166,52 @@ function drawRoundedRectangle(ctx,x,y,width,height,radius) {
     ctx.stroke();
 }
 
-
+// Checks for a click on canvas can buttons.
+// Pans if there was such a click, and returns true to indicate click.
+// Returns false if we did not click on a button.
 function checkPanClick(mouseX, mouseY) {
     // Pan up
     // The center of the button's click location
-    var bcenter = {"x": canvas.width/2,
-                   "y": 0 + 22};
+    var bcenter = G.point(canvas.width/2, 0 + 22);
     if(mouseY >= 0 && mouseY <= bcenter.y + 50/2 &&
        mouseX >= bcenter.x - 100/2 && mouseX <= bcenter.x + 100/2) {
         yOffset+= 4;
         drawBlueprint();
-        return;
+        return true;
     }
     // Pan left
     bcenter.x = 20;
     bcenter.y = canvas.height/2;
-    if(mouseX >= 0 && mouseX <= bcenter.x + 50/2 &&
-       mouseY >= bcenter.y - 100/2 && mouseY <= bcenter.y + 100/2) {
+    if (mouseX >= 0 && mouseX <= bcenter.x + 50/2 &&
+        mouseY >= bcenter.y - 100/2 && mouseY <= bcenter.y + 100/2) {
         xOffset+= 4;
         drawBlueprint();
-        return;
+        return true;
     }
     // Pan down
     bcenter.x = canvas.width/2;
     bcenter.y = canvas.height - 22;
-    if(mouseX >= bcenter.x - 100/2 && mouseX <=  bcenter.x + 100/2 &&
-       mouseY >= bcenter.y - 50/2 && mouseY <= canvas.height){
+    if (mouseX >= bcenter.x - 100/2 && mouseX <=  bcenter.x + 100/2 &&
+        mouseY >= bcenter.y - 50/2 && mouseY <= canvas.height) {
         yOffset-= 4;
         drawBlueprint();
-        return;
+        return true;
     }
     // Pan right
     bcenter.x = canvas.width - 20;
     bcenter.y = canvas.height/2;
-    if(mouseX >= bcenter.x - 50/2 && mouseX <= canvas.width &&
-       mouseY >= bcenter.y - 100/2 && mouseY <= bcenter.y + 100/2){
+    if (mouseX >= bcenter.x - 50/2 && mouseX <= canvas.width &&
+        mouseY >= bcenter.y - 100/2 && mouseY <= bcenter.y + 100/2) {
         xOffset-= 4;
         drawBlueprint();
-        return;
+        return true;
     }
+
+    return false;
 }
 
+
+// Draws wall coordinates on the map
 function drawWall(mouseX, mouseY) {
     if (currentTool === "drawWall") {
         if (prevWallCoord === null) {
@@ -244,9 +249,21 @@ function canvasOnMouseDown(event) {
 
     // Checks for clicks on the pan button, and pans canvas viewport if click
     // cooresponds to a pan button
-    checkPanClick(mouseX, mouseY);
+    var pannedCanvas = checkPanClick(mouseX, mouseY);
 
-    drawWall(mouseX, mouseY);
+
+    // If we panned the canvas, we shouldn't draw a wall part.
+    // You should be able to click on the pan buttons even with the wall tool
+    // functioning
+    if (!pannedCanvas) {
+        drawWall(mouseX, mouseY);
+    }
+}
+
+
+// TODO implement this shit
+function linesCross(x1, y1, x2, y2) {
+    return true;
 }
 
 
