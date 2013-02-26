@@ -13,8 +13,8 @@ var roomClosed = false;
 var furniture = [];
 //walls are stored as 4 tuples in the following way
 // [starting X coord, starting y coord, ending x cooord, ending y coord]
-var currentTool="none";
-var currentFurniture= "none";
+var currentTool = "none";
+var currentFurniture = "none";
 //used for creating walls
 var prevWallCoord = null;
 //the offset of the current view from the origin
@@ -48,9 +48,10 @@ var furnitureTypes =
 }
 
 for(key in furnitureTypes){
-    var temp = new Image;
+    var temp = new Image();
     temp.src = furnitureTypes[key]["path"];
     furnitureTypes[key]["image"] = temp;
+    furnitureTypes[key].dimensions = G.point(3,3);
 }
 
 
@@ -219,11 +220,27 @@ function drawWall (walls) {
     ctx.closePath();
 }
 
+// Draws an array of furniture objects
+function drawFurniture(furniture) {
+    furniture.forEach(function (furn) {
+        var p = furn.location;
+        var unscaledP = unscalePoint(p.x, p.y);
+        var unscaledDims = unscalePoint(furn.dimensions.x, furn.dimensions.y);
+
+        console.log(furn.image);
+
+        // TODO why are dimensions a constant?
+        F.drawFurniture(unscaledP, unscaledDims, 0, furn.image);
+    });
+}
+
 // Draws everything on the blueprint
 function drawBlueprint() {
     setUpBlueprint();
 
+    // Draw all stored, closed-wall shapes
     subrooms.forEach(drawWall);
+    // draw current working open-wall shape
     drawWall(walls);
 
     // Draw current wall dot
@@ -237,6 +254,10 @@ function drawBlueprint() {
         drawRoundedRectangle(ctx, unscaled.x - scale/4, unscaled.y - scale/4,
                              scale/2, scale/2, scale/4);
     }
+
+    // Draw the furniture
+    drawFurniture(furniture);
+
     drawButtons();
 }
 
@@ -331,39 +352,50 @@ function unscalePoint(x,y) {
 
 // Plots the wall coordinates on the map and then draws them
 function plotWall (mouseX, mouseY) {
-    if (currentTool === "drawWall") {
-        if (prevWallCoord === null) {
-            prevWallCoord = scalePoint(mouseX, mouseY);
+    if (prevWallCoord === null) {
+        prevWallCoord = scalePoint(mouseX, mouseY);
+        drawBlueprint();
+    }
+    else {
+        var newWallCoord = scalePoint(mouseX, mouseY);
+
+        // if there is no intersection,
+        // then plot the point
+        if (!checkLineIntersection(prevWallCoord, newWallCoord)) {
+            walls.push(prevWallCoord, newWallCoord);
+            // If we click on the start, close the room and finish
+            // drawing walls
+            if (newWallCoord.equals(walls[0])) {
+                roomClosed = true;
+                toggleWallTool();
+                subrooms.push(walls);
+                prevWallCoord = null;
+                walls = [];
+            }
+            else {
+                prevWallCoord = newWallCoord;
+            }
             drawBlueprint();
         }
-        else {
-            var newWallCoord = scalePoint(mouseX, mouseY);
+    }
+}
 
-            // if there is no intersection,
-            // then plot the point
-            if (!checkLineIntersection(prevWallCoord, newWallCoord)) {
-                walls.push(prevWallCoord, newWallCoord);
-                // If we click on the start, close the room and finish
-                // drawing walls
-                if (newWallCoord.equals(walls[0])) {
-                    roomClosed = true;
-                    toggleWallTool();
-                    subrooms.push(walls);
-                    prevWallCoord = null;
-                    walls = [];
-                }
-                else {
-                    prevWallCoord = newWallCoord;
-                }
-                drawBlueprint();
-            }
-        }
-    }
-    // If we turned off the wall drawing function, then it resets the previous
-    // wall coordinate
-    else {
-        prevWallCoord = null;
-    }
+// Plots furniture snapped to the grid and adds it to our store
+// of furniture in the room
+function plotFurniture(x, y) {
+    var snappedPoint = scalePoint(x,y);
+
+    var furnObj = {'type': currentFurniture,
+                   'path': furnitureTypes[currentFurniture].path,
+                   'image': furnitureTypes[currentFurniture].image,
+                   'location': snappedPoint,
+                   'dimensions': furnitureTypes[currentFurniture].dimensions};
+
+    furniture.push(furnObj);
+    currentFurniture = "none";
+    currentTool = "none";
+
+    drawBlueprint();
 }
 
 function onMouseMove(event){
@@ -375,10 +407,13 @@ function onMouseMove(event){
         // Round and unround the point to snap it to grid
         var pscaled = scalePoint(mouseX, mouseY);
         var psnappedPixels = unscalePoint(pscaled.x, pscaled.y);
+        var scaledDims = furnitureTypes[currentFurniture].dimensions;
+        var unscaledDims = unscalePoint(scaledDims.x, scaledDims.y);
+
 
         // TODO: why are dimensions a constant (200, 200)
-         drawFurniture(psnappedPixels, G.point(200,200), 0,
-             furnitureTypes[currentFurniture]['image']);
+         F.drawFurniture(psnappedPixels, unscaledDims, 0,
+                         furnitureTypes[currentFurniture]['image']);
 
     }
 }
@@ -403,7 +438,18 @@ function canvasOnMouseDown(event) {
     // You should be able to click on the pan buttons even with the wall tool
     // functioning
     if (!pannedCanvas) {
-        plotWall(mouseX, mouseY);
+        if (currentTool === "drawWall") {
+            plotWall(mouseX, mouseY);
+        }
+        // If we turned off the wall drawing function,
+        // then it resets the previous wall coordinate
+        else {
+            prevWallCoord = null;
+        }
+
+        if (currentTool === "placeFurniture") {
+            plotFurniture(mouseX, mouseY);
+        }
     }
 }
 
