@@ -85,7 +85,6 @@ function main() {
 
 function selectFurnitureType(key){
     var furnKey = key;
-    console.log(key)
     return function(){
         currentFurniture = furnKey;
         if (currentTool ==="drawWall"){
@@ -317,17 +316,23 @@ function checkLineIntersection(p1, p2) {
     return false;
 }
 
+// Creates a point that is rounded to fit on the grid by the scale of the grid
+// and is offset by the change in our blueprint/canvas viewport.
+// Assume that we start at the top left of the canvas
+function roundPoint(x, y) {
+    return G.point(Math.round(x/scale) - xOffset,
+                   Math.round(y/scale) - yOffset);
+}
+
 // Plots the wall coordinates on the map and then draws them
 function plotWall (mouseX, mouseY) {
     if (currentTool === "drawWall") {
         if (prevWallCoord === null) {
-            prevWallCoord = G.point(Math.round(mouseX/scale)-xOffset,
-                                    Math.round(mouseY/scale)-yOffset);
+            prevWallCoord = roundPoint(mouseX, mouseY);
             drawBlueprint();
         }
         else {
-            var newWallCoord = G.point(Math.round(mouseX/scale)-xOffset,
-                                       Math.round(mouseY/scale)-yOffset);
+            var newWallCoord = roundPoint(mouseX, mouseY);
 
             // if there is no intersection,
             // then plot the point
@@ -357,7 +362,6 @@ function plotWall (mouseX, mouseY) {
 }
 
 function onMouseMove(event){
-    console.log(currentTool)
     if(currentTool==="placeFurniture"){
         var mouseX= event.x;
         var mouseY= event.y - $("#toolbar").outerHeight(true);
