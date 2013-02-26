@@ -227,8 +227,6 @@ function drawFurniture(furniture) {
         var unscaledP = unscalePoint(p.x, p.y);
         var unscaledDims = unscalePoint(furn.dimensions.x, furn.dimensions.y);
 
-        console.log(furn.image);
-
         // TODO why are dimensions a constant?
         F.drawFurniture(unscaledP, unscaledDims, 0, furn.image);
     });
@@ -370,9 +368,9 @@ function plotWall (mouseX, mouseY) {
             if (newWallCoord.equals(walls[0])) {
                 roomClosed = true;
                 toggleWallTool();
-                subrooms.push(walls);
-                prevWallCoord = null;
-                walls = [];
+                // subrooms.push(walls);
+                // prevWallCoord = null;
+                // walls = [];
             }
             else {
                 prevWallCoord = newWallCoord;
@@ -461,6 +459,8 @@ function toggleWallTool(event) {
     var wallButton = $('#wall_tool');
     if (currentTool === "drawWall") {
         currentTool = "none";
+        subrooms.push(walls);
+        walls = [];
         prevWallCoord = null;
         wallButton.css("background-color", "");
     } else {
@@ -488,14 +488,14 @@ function zoomIn(event) {
 }
 
 
-// Removes object functions so that the point can be JSONified
-function loadFormatRooms(subrooms) {
-    // from https://developer.mozilla.org/en-US/
-    // docs/JavaScript/Reference/Global_Objects/Array/map
-    function returnInt(element){
-        return parseInt(element, 10);
-    }
+// from https://developer.mozilla.org/en-US/
+// docs/JavaScript/Reference/Global_Objects/Array/map
+function returnInt(element){
+    return parseInt(element, 10);
+}
 
+// Adds in object functions so that the point can be used again
+function loadFormatRooms(subrooms) {
     return subrooms.map(function (walls) {
         return walls.map(function (point) {
             // parse the string ints to actual numbers
@@ -505,39 +505,85 @@ function loadFormatRooms(subrooms) {
     });
 }
 
+// Adds back in necessary methods and data we didn't pass over to server
+function loadFormatFurniture(furniture) {
+    return furniture.map(function (furn) {
+        var furnObj = {
+            'type': furn.type,
+            'location': G.point(returnInt(furn.location.x),
+                                returnInt(furn.location.y)),
+            'dimensions': G.point(returnInt(furn.dimensions.x),
+                                  returnInt(furn.dimensions.y)),
+            'path': furn.path
+        };
+        var temp = new Image();
+        temp.src = furnObj.path;
+        furnObj.image = temp;
+        furnObj.onload = drawBlueprint();
+
+        return furnObj;
+    });
+}
+
 // TODO convert the loaded points back to actual points
 function loadRoom() {
     var roomId = $("#load-input").val();
     $.ajax({
-      type: "get",
-      url: "/room/"+roomId,
-      success: function(data) {
-          subrooms = loadFormatRooms(data.room["subrooms"]);
-          console.log(subrooms);
-          furniture = data.room["furniture"];
-          drawBlueprint();
-      }
+        type: "get",
+        url: "/room/"+roomId,
+        success: function(data) {
+            console.log('LOAD ROOOOOM');
+            console.log(data);
+            if (data.room['subrooms'] === undefined) {
+                subrooms = [];
+            }
+            else {
+                subrooms = loadFormatRooms(data.room["subrooms"]);
+            }
+            if (data.room['furniture'] === undefined) {
+                furniture = [];
+            }
+            else {
+                //              console.log(data.room);
+                furniture = loadFormatFurniture(data.room["furniture"]);
+                console.log('FUUUUUUUUUUUUUUUUCK');
+                console.log(furniture);
+            }
+            drawBlueprint();
+        }
     });
+}
+
+
+function saveFormatPoint(p) {
+    return {'x': p.x, 'y': p.y};
 }
 
 // Removes object functions so that the point can be JSONified
 function saveFormatRooms(subrooms) {
     return subrooms.map(function (walls) {
         return walls.map(function (point) {
-            return {'x': point.x,
-                    'y': point.y};
+            return saveFormatPoint(p);
         });
     });
 }
 
-function saveRoom(){
+function saveFormatFurniture(furniture) {
+    return furniture.map(function (furn) {
+        return {'type': furn.type,
+                'location': saveFormatPoint(furn.location),
+                'dimensions': saveFormatPoint(furn.dimensions),
+                'path': furn.path};
+    });
+}
+
+function saveRoom() {
     var saveName = $("#save-input").val();
-    console.log(walls);
     $.ajax({
             type: "post",
             url: "/room/" + saveName,
             data: {'sendSubRooms': saveFormatRooms(subrooms),
-                   'sendFurniture': furniture},
+                   'sendFurniture': saveFormatFurniture(furniture)},
             success: function(data) {
                 // todo on good save
             }

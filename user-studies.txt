@@ -1,0 +1,14 @@
+Instructions
+=============
+
+Draw a room shaped like a plus-sign shaped room,
+shaped like this: http://i.imgur.com/CTZkBw3.png
+
+place a dresser in the left wing,
+a mini fridge in the top wing,
+a hamper in the bottom,
+and a lamp in the right
+
+save the room
+
+Now refresh the page and load your room
