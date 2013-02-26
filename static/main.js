@@ -112,7 +112,7 @@ function setUpScreen(){
         temp.html("<img class='svg' src='/"+
             furnitureTypes[f[i]]["path"]
             +"' width='50' height='50'/>");
-        temp.append(f[i])
+        temp.append(f[i]);
         temp.click(selectFurnitureType(f[i]));
         furnitureList.append(temp);
     }
@@ -203,15 +203,16 @@ function drawWall (walls) {
     ctx.strokeStyle="white"
     ctx.beginPath();
     for (var i = 0; i<walls.length; i++){
+        var unscaled = unscalePoint(walls[i].x, walls[i].y);
         // If there was no previous coordinate, we just move to the first one
         if (prevCoord === null) {
-            ctx.moveTo((walls[i].x+xOffset)*scale,(walls[i].y+yOffset)*scale);
+            ctx.moveTo(unscaled.x, unscaled.y);
             prevCoord = walls[i];
         }
         // Otherwise, draw from the previous to the current and then move to
         // the current
         else {
-            ctx.lineTo((walls[i].x+xOffset)*scale,(walls[i].y+yOffset)*scale);
+            ctx.lineTo(unscaled.x, unscaled.y);
         }
     }
     ctx.stroke();
@@ -230,8 +231,10 @@ function drawBlueprint() {
         ctx.strokeStyle = "black";
         ctx.lineWidth   = 1;
         ctx.fillStyle   = "red";
-        drawRoundedRectangle(ctx, ((prevWallCoord.x+xOffset)*scale) - scale/4,
-                             ((prevWallCoord.y+yOffset)*scale) - scale/4,
+
+        var unscaled = unscalePoint(prevWallCoord.x, prevWallCoord.y);
+
+        drawRoundedRectangle(ctx, unscaled.x - scale/4, unscaled.y - scale/4,
                              scale/2, scale/2, scale/4);
     }
     drawButtons();
@@ -316,20 +319,25 @@ function checkLineIntersection(p1, p2) {
 // Creates a point that is rounded to fit on the grid by the scale of the grid
 // and is offset by the change in our blueprint/canvas viewport.
 // Assume that we start at the top left of the canvas
-function roundPoint(x, y) {
+function scalePoint(x, y) {
     return G.point(Math.round(x/scale) - xOffset,
                    Math.round(y/scale) - yOffset);
+}
+
+function unscalePoint(x,y) {
+    return G.point((x + xOffset) * scale,
+                   (y + yOffset) * scale);
 }
 
 // Plots the wall coordinates on the map and then draws them
 function plotWall (mouseX, mouseY) {
     if (currentTool === "drawWall") {
         if (prevWallCoord === null) {
-            prevWallCoord = roundPoint(mouseX, mouseY);
+            prevWallCoord = scalePoint(mouseX, mouseY);
             drawBlueprint();
         }
         else {
-            var newWallCoord = roundPoint(mouseX, mouseY);
+            var newWallCoord = scalePoint(mouseX, mouseY);
 
             // if there is no intersection,
             // then plot the point
@@ -360,15 +368,17 @@ function plotWall (mouseX, mouseY) {
 
 function onMouseMove(event){
     if(currentTool==="placeFurniture"){
-        var mouseX= event.x;
-        var mouseY= event.y - $("#toolbar").outerHeight(true);
+        var mouseX = event.x;
+        var mouseY = event.y - $("#toolbar").outerHeight(true);
         drawBlueprint();
-        // drawFurniture([mouseX,mouseY],[200,200],0,
-        //     furnitureTypes[currentFurniture]["image"]);
+
+        // Round and unround the point to snap it to grid
+        var pscaled = scalePoint(mouseX, mouseY);
+        var psnappedPixels = unscalePoint(pscaled.x, pscaled.y);
 
         // TODO: why are dimensions a constant (200, 200)
-        drawFurniture(roundPoint(mouseX,mouseY),G.point(200,200),0,
-            furnitureTypes[currentFurniture].image);
+         drawFurniture(psnappedPixels, G.point(200,200), 0,
+             furnitureTypes[currentFurniture]['image']);
 
     }
 }

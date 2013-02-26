@@ -135,7 +135,6 @@ function drawFurniture(location, dimensions, orientation, svg){
 	ctx.save();
 
     //translate canvas to spot to be rotated around
-//	ctx.translate(location[0], location[1]);
 	ctx.translate(location.x, location.y);
 
     //Rotate the canvas(angle in radians)
@@ -143,8 +142,7 @@ function drawFurniture(location, dimensions, orientation, svg){
 
     // draw it. This assumes the object svg is an image object with svg.source set as
     // the path to the svg file.
-//	ctx.drawImage(svg, -(dimensions[0]/2), -(dimensions[1]/2));
-	ctx.drawImage(svg, -(dimensions.x/2), -(dimensions.y/2));
+    ctx.drawImage(svg, -(dimensions.x/4), -(dimensions.y/4));
 
     //rotate it back
 	ctx.rotate(-(orientation));
