@@ -1,3 +1,6 @@
+///////////////////
+// Global Values //
+///////////////////
 var canvas = document.getElementById("blueprint");
 var ctx = canvas.getContext("2d");
 //scale = pixels/foot
@@ -19,7 +22,7 @@ var xOffset = 0;
 var yOffset = 0;
 
 
-var furnitureTypes = 
+var furnitureTypes =
 {
     "bed":{"topdown":true,"path":"static/icons/bed.svg"},
     "bigFridge":{"topdown":false,"path":"static/icons/bigFridge.svg"},
@@ -51,7 +54,9 @@ for(key in furnitureTypes){
 }
 
 
-
+/////////////////////////////
+// End of Global Variables //
+/////////////////////////////
 function main() {
     canvas.addEventListener("mousedown", canvasOnMouseDown, false);
     canvas.addEventListener("mousemove", onMouseMove, false);
@@ -434,7 +439,7 @@ function loadFormatRooms(subrooms) {
 }
 
 // TODO convert the loaded points back to actual points
-function loadRoom(){
+function loadRoom() {
     var roomId = $("#load-input").val();
     $.ajax({
       type: "get",
