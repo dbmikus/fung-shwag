@@ -40,43 +40,42 @@ function writeFile(filename, data, callbackFn) {
 
 // get a room
 app.get("/room/:id", function(request, response){
-  var id = request.params.id;
-  console.log(rooms);
-  var room = rooms[id];
-  console.log(rooms[id]);
-  response.send({
-    room: room,
-    success: true
-  });
+    var id = request.params.id;
+    console.log(rooms);
+    var room = rooms[id];
+    console.log(rooms[id]);
+    response.send({
+        room: room,
+        success: true
+    });
 });
 
 // from https://developer.mozilla.org/en-US/
 // docs/JavaScript/Reference/Global_Objects/Array/map
 function returnInt(element){
-    return parseInt(element,10);
+    return parseInt(element, 10);
 }
 
 
 function intList(list){
-    for(var i = 0; i<list.length; i++)
-        list[i]=list[i].map(returnInt)
+    for(var i = 0; i<list.length; i++) {
+        list[i]=list[i].map(returnInt);
+    }
     return list;
 }
 
 // save a room
 app.post("/room/:id", function(request, response){
-  var id = request.params.id;
-  var inputSubRooms = intList(request.body.sendSubRooms);
-    console.log('INPUT SUB ROOMS AAAHAHAH FUCK!');
+    var id = request.params.id;
+    var inputSubRooms = request.body.sendSubRooms;
     console.log(inputSubRooms);
-  var inputFurniture = request.body.sendFurniture;
-  rooms[id]={"subrooms": inputSubRooms,
-             "furniture":inputFurniture};
-  writeFile("data.txt", JSON.stringify(rooms));
-  response.send({
-    success: true
-  })
-
+    var inputFurniture = request.body.sendFurniture;
+    rooms[id]={"subrooms":  inputSubRooms,
+               "furniture": inputFurniture};
+    writeFile("data.txt", JSON.stringify(rooms));
+    response.send({
+        success: true
+    })
 });
 
 // delete entire list

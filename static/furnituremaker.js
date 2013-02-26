@@ -13,10 +13,6 @@ assembly : []
 
 */
 
-//script taken from the url below
-//<script type="text/javascript" src="http://canvg.googlecode.com/svn/trunk/rgbcolor.js"></script> 
-//<script type="text/javascript" src="http://canvg.googlecode.com/svn/trunk/canvg.js"></script> 
-
 //load '../path/to/your.svg' in the canvas with id = 'canvas'
 //canvg('canvas', '../path/to/your.svg')
 
@@ -96,32 +92,31 @@ function drawEllipse(ctx, location, orientation, color, dimensions) {
 	ctx.restore();
 }
 
-function addFurniture( type, mouseX, mouseY, dimensionX, dimensionY, orientation, color ) {
-	
+function addFurniture(type, mouseX, mouseY, dimensionX, dimensionY, orientation, color) {
 	furniture.push({
 	'type': type,
 	'location' : [mouseX,mouseY] ,
 	'dimensions': [dimensionX,dimensionY],
 	'orientation': orientation,
-	'color' : color, 
-	
-	})
-	
+	'color' : color
+	});
 }
+
 //assuming arguments are passed in the form (position of furniture object in furniture array, mode, new value)
-function editFurniture( arguments){
+function editFurniture( arguments) {
 	var mode = arguments[1];
 	var i = arguments[0];
-	
-	//assuming clicking with this tool activated calls the function properly. 
+
+	//assuming clicking with this tool activated calls the function properly.
 	if (mode === 'move') {
 		furniture[i].location = [mouseX,mouseY];
 	}
-	//assuming resize buttons call this function with arguments (i, 'resize', +-x) 
+	//assuming resize buttons call this function with arguments (i, 'resize', +-x)
 	if (mode === 'resize') {
-		furniture[i].dimensions = [furniture.dimensions[0] + arguments[2] , furniture.dimensions[1] + arguments[2]];
+		furniture[i].dimensions = [furniture.dimensions[0] + arguments[2],
+                                   furniture.dimensions[1] + arguments[2]];
 	}
-	//assuming after rotation is completed, calls function with arguments (i , 'rotate' , orientation) 
+	//assuming after rotation is completed, calls function with arguments (i , 'rotate' , orientation)
 	if (mode === 'rotate') {
 		furniture[i].orientation = arguments[2];
 	}
@@ -133,29 +128,25 @@ function editFurniture( arguments){
 
 
 function drawFurniture(location, dimensions, orientation, svg){
-//im ont sure if this function is part of the script loaded or if its built into canvas
-//or if it even works. and how
+    // I'm not sure if this function is part of the script loaded or if its built into canvas
+    // or if it even works. and how
 
-//BUT if this works, then svg is just the path to the SVG file that is storing our icon. 
-	//ctx.drawSvg(svg , location[0] - (dimensions[0]/2), location[1] - (dimensions[1]/2) , dimensions[0], dimensions[1]);
-
-//save canvas state	
+    //save canvas state
 	ctx.save();
 
-//translate canvas to spot to be rotated around
+    //translate canvas to spot to be rotated around
 	ctx.translate(location[0], location[1]);
-	
-//Rotate the canvas(angle in radians)
-	ctx.rotate(orientation);
-	
-//draw it. This assumes the object svg is an image object with svg.source set as 
-// the path to the svg file. 
-	ctx.drawImage(svg, -(dimensions[0]/2) , -(dimensions[1]/2) ); 
 
-//rotate it back
+    //Rotate the canvas(angle in radians)
+	ctx.rotate(orientation);
+
+    // draw it. This assumes the object svg is an image object with svg.source set as
+    // the path to the svg file.
+	ctx.drawImage(svg, -(dimensions[0]/2), -(dimensions[1]/2));
+
+    //rotate it back
 	ctx.rotate(-(orientation));
-	
-//restore canvas
+
+    //restore canvas
 	ctx.restore();
 }
-
