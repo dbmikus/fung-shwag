@@ -9,20 +9,16 @@ dimensions : [width, height] ,
 metadata : { author : author, date: date, category} ,
 assembly : []
 }
-
-
 */
 
-//load '../path/to/your.svg' in the canvas with id = 'canvas'
-//canvg('canvas', '../path/to/your.svg')
+var F = (function () {
 
-//load a svg snippet in the canvas with id = 'drawingArea'
-//canvg(document.getElementById('drawingArea'), '<svg>...</svg>')
+var F = {};
 
 // orientation is stored as radians, color as a hex, location as an array [x,y],
 // dimensions stored as an array [width, height]
 // ctx should be a 2d canvas context
-function drawRectangle(ctx, location, orientation, color, dimensions) {
+F.drawRectangle = function(ctx, location, orientation, color, dimensions) {
     ctx.save();
 
 	//Move context to the point you are rotating around (the center of your drawing)
@@ -39,7 +35,7 @@ function drawRectangle(ctx, location, orientation, color, dimensions) {
     ctx.restore();
 }
 
-function drawCircle(ctx, location, color, dimensions) {
+F.drawCircle = function(ctx, location, color, dimensions) {
     ctx.fillStyle = color;
     ctx.beginPath();
 	ctx.arc(location[0], location[1], dimensions[1], 0, 2 * Math.PI, false);
@@ -48,7 +44,7 @@ function drawCircle(ctx, location, color, dimensions) {
 
 // Source from: http://stackoverflow.com/questions/2172798/how-to-draw-an-oval-in-html5-canvas
 // Author: Steve Tranby on StackOverflow
-function drawEllipse(ctx, location, orientation, color, dimensions) {
+F.drawEllipse = function(ctx, location, orientation, color, dimensions) {
     var x = location[0];
     var y = location[1];
     var w = dimensions[0];
@@ -92,7 +88,7 @@ function drawEllipse(ctx, location, orientation, color, dimensions) {
 	ctx.restore();
 }
 
-function addFurniture(type, mouseX, mouseY, dimensionX, dimensionY, orientation, color) {
+F.addFurniture = function(type, mouseX, mouseY, dimensionX, dimensionY, orientation, color) {
 	furniture.push({
 	'type': type,
 	'location' : [mouseX,mouseY] ,
@@ -103,7 +99,7 @@ function addFurniture(type, mouseX, mouseY, dimensionX, dimensionY, orientation,
 }
 
 //assuming arguments are passed in the form (position of furniture object in furniture array, mode, new value)
-function editFurniture( arguments) {
+F.editFurniture = function( arguments) {
 	var mode = arguments[1];
 	var i = arguments[0];
 
@@ -127,15 +123,16 @@ function editFurniture( arguments) {
 }
 
 
-function drawFurniture(location, dimensions, orientation, svg){
+F.drawFurniture = function(location, dimensions, orientation, svg){
     // I'm not sure if this function is part of the script loaded or if its built into canvas
     // or if it even works. and how
 
     //save canvas state
 	ctx.save();
 
-    //translate canvas to spot to be rotated around
-	ctx.translate(location[0], location[1]);
+    // translate canvas to spot to be rotated around
+    // We draw the furniture around the center of the x and y coordinates
+	ctx.translate(location.x, location.y);
 
     //Rotate the canvas(angle in radians)
 	ctx.rotate(orientation);
@@ -150,3 +147,7 @@ function drawFurniture(location, dimensions, orientation, svg){
     //restore canvas
 	ctx.restore();
 }
+
+return F;
+
+})();
