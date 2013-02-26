@@ -137,9 +137,14 @@ F.drawFurniture = function(location, dimensions, orientation, svg){
     //Rotate the canvas(angle in radians)
 	ctx.rotate(orientation);
 
-    // draw it. This assumes the object svg is an image object with svg.source set as
-    // the path to the svg file.
-	ctx.drawImage(svg, -(dimensions[0]/4), -(dimensions[1]/4));
+    // draw it. This assumes the object svg is an image object with svg.source
+    // set as the path to the svg file.
+    // Since we translated to the center and we draw from top left, we must go
+    // halfway to the left and halfway to the top to correctly draw centered
+    // on x and y
+    ctx.drawImage(svg, -(dimensions.x/2), -(dimensions.y/2),
+                  dimensions.x, dimensions.y);
+
 
     //rotate it back
 	ctx.rotate(-(orientation));
