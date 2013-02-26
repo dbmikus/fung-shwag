@@ -130,22 +130,35 @@ function drawBlueprint() {
     setUpBlueprint();
 
     // Drawing each wall in our wall array
-    for (var i =0; i<walls.length; i++){
-        ctx.lineWidth= 5;
-        ctx.strokeStyle="white"
-        ctx.beginPath();
-        ctx.moveTo((walls[i][0]+xOffset)*scale,(walls[i][1]+yOffset)*scale);
-        ctx.lineTo((walls[i][2]+xOffset)*scale,(walls[i][3]+yOffset)*scale);
-        ctx.stroke();
-        ctx.closePath();
+    var prevCoord = undefined;
+    ctx.lineWidth= 5;
+    ctx.strokeStyle="white"
+    ctx.beginPath();
+    for (var i = 0; i<walls.length; i++){
+        // If there was no previous coordinate, we just move to the first one
+        if (prevCoord === undefined) {
+            console.log("Setting prev at (" + walls[i].x + ", " + walls[i].y + ")");
+            ctx.moveTo((walls[i].x+xOffset)*scale,(walls[i].y+yOffset)*scale);
+            prevCoord = walls[i];
+        }
+        // Otherwise, draw from the previous to the current and then move to
+        // the current
+        else {
+            console.log("Drawing to (" + walls[i].x + ", " + walls[i].y + ")");
+            ctx.lineTo((walls[i].x+xOffset)*scale,(walls[i].y+yOffset)*scale);
+        }
     }
-    if(prevWallCoord){
+    ctx.stroke();
+    ctx.closePath();
+
+    // Draw current wall dot
+    if(prevWallCoord) {
         ctx.strokeStyle = "black";
         ctx.lineWidth   = 1;
         ctx.fillStyle= "red";
-        drawRoundedRectangle(ctx, ((prevWallCoord[0]+xOffset)*scale)-scale/4,
-                                ((prevWallCoord[1]+yOffset)*scale)-scale/4,
-                                scale/2, scale/2,scale/4)
+        drawRoundedRectangle(ctx, ((prevWallCoord.x+xOffset)*scale) - scale/4,
+                             ((prevWallCoord.y+yOffset)*scale) - scale/4,
+                             scale/2, scale/2, scale/4);
     }
     drawButtons();
 }
@@ -215,15 +228,14 @@ function checkPanClick(mouseX, mouseY) {
 function drawWall(mouseX, mouseY) {
     if (currentTool === "drawWall") {
         if (prevWallCoord === null) {
-            prevWallCoord = [Math.round(mouseX/scale)-xOffset,
-                            Math.round(mouseY/scale)-yOffset];
+            prevWallCoord = G.point(Math.round(mouseX/scale)-xOffset,
+                                    Math.round(mouseY/scale)-yOffset);
         }
         else {
-            var newWallCoord = [Math.round(mouseX/scale)-xOffset,
-                                Math.round(mouseY/scale)-yOffset];
+            var newWallCoord = G.point(Math.round(mouseX/scale)-xOffset,
+                                       Math.round(mouseY/scale)-yOffset);
 
-            walls.push([prevWallCoord[0], prevWallCoord[1],
-                        newWallCoord[0], newWallCoord[1]]);
+            walls.push(prevWallCoord, newWallCoord);
 
             prevWallCoord = newWallCoord;
         }
@@ -258,12 +270,6 @@ function canvasOnMouseDown(event) {
     if (!pannedCanvas) {
         drawWall(mouseX, mouseY);
     }
-}
-
-
-// TODO implement this shit
-function linesCross(x1, y1, x2, y2) {
-    return true;
 }
 
 
