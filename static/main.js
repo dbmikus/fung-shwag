@@ -53,7 +53,7 @@ function setUpScreen(){
 }
 
 // Configures the background stuff for the blueprint
-function setUpBlueprint(){
+function setUpBlueprint() {
     ctx.fillStyle = "#1B438C"
     ctx.fillRect(0,0,canvas.width,canvas.height);
     ctx.lineWidth =1;
