@@ -1,4 +1,4 @@
-// 15-237 Homework 3 - Eebae Server
+// 15-237 Homework 3 - Fung Shwag
 
 var express = require("express"); // imports express
 var app = express();        // create a new instance of express
@@ -53,25 +53,25 @@ app.get("/room/:id", function(request, response){
 // from https://developer.mozilla.org/en-US/
 // docs/JavaScript/Reference/Global_Objects/Array/map
 function returnInt(element){
-  return parseInt(element,10);
+    return parseInt(element,10);
 }
 
 
 function intList(list){
-  for(var i = 0; i<list.length; i++)
-    list[i]=list[i].map(returnInt) 
-  return list;
+    for(var i = 0; i<list.length; i++)
+        list[i]=list[i].map(returnInt)
+    return list;
 }
 
 // save a room
 app.post("/room/:id", function(request, response){
   var id = request.params.id;
-  var inputWalls = intList(request.body.sendWalls);
-  var inputFurniture= request.body.sendFurniture;
-  console.log(inputWalls);
-
-  rooms[id]={"walls":inputWalls,
-             "furniture":inputFurniture}
+  var inputSubRooms = intList(request.body.sendSubRooms);
+    console.log('INPUT SUB ROOMS AAAHAHAH FUCK!');
+    console.log(inputSubRooms);
+  var inputFurniture = request.body.sendFurniture;
+  rooms[id]={"subrooms": inputSubRooms,
+             "furniture":inputFurniture};
   writeFile("data.txt", JSON.stringify(rooms));
   response.send({
     success: true

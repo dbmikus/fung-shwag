@@ -8,11 +8,14 @@ G.point = function (x, y) {
     var point = {"x": x, "y": y};
 
     point.toString = function () {
-        return ("(" + this.x + ", " + this.y + ")");
+        return ("(" + point.x + ", " + point.y + ")");
     }
 
     point.equals = function (other) {
-        return (this.x === other.x && this.y === other.y);
+        if (other === undefined || other === null) {
+            return false;
+        }
+        return (point.x === other.x && point.y === other.y);
     }
 
     return point;

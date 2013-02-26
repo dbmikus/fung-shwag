@@ -3,7 +3,8 @@ var ctx = canvas.getContext("2d");
 //scale = pixels/foot
 var scale = 30;
 var walls = [];
-var rooms = [];
+// Rooms hold closed walls segments
+var subrooms = [];
 var roomClosed = false;
 //furniture is an array of furniture objects
 var furniture = [];
@@ -127,10 +128,7 @@ function drawButtons() {
     drawButton(canvas.width-20, canvas.height/2, 0);
 }
 
-// Draws everything on the blueprint
-function drawBlueprint() {
-    setUpBlueprint();
-
+function drawWall (walls) {
     // Drawing each wall in our wall array
     var prevCoord = null;
     ctx.lineWidth= 5;
@@ -150,6 +148,14 @@ function drawBlueprint() {
     }
     ctx.stroke();
     ctx.closePath();
+}
+
+// Draws everything on the blueprint
+function drawBlueprint() {
+    setUpBlueprint();
+
+    subrooms.forEach(drawWall);
+    drawWall(walls);
 
     // Draw current wall dot
     if(prevWallCoord && currentTool === "drawWall") {
@@ -239,8 +245,8 @@ function checkLineIntersection(p1, p2) {
     return false;
 }
 
-// Draws wall coordinates on the map
-function drawWall(mouseX, mouseY) {
+// Plots the wall coordinates on the map and then draws them
+function plotWall (mouseX, mouseY) {
     if (currentTool === "drawWall") {
         if (prevWallCoord === null) {
             prevWallCoord = G.point(Math.round(mouseX/scale)-xOffset,
@@ -260,11 +266,13 @@ function drawWall(mouseX, mouseY) {
                 if (newWallCoord.equals(walls[0])) {
                     roomClosed = true;
                     toggleWallTool();
-                    rooms.push(walls);
+                    subrooms.push(walls);
                     prevWallCoord = null;
                     walls = [];
                 }
-                prevWallCoord = newWallCoord;
+                else {
+                    prevWallCoord = newWallCoord;
+                }
                 drawBlueprint();
             }
         }
@@ -296,7 +304,7 @@ function canvasOnMouseDown(event) {
     // You should be able to click on the pan buttons even with the wall tool
     // functioning
     if (!pannedCanvas) {
-        drawWall(mouseX, mouseY);
+        plotWall(mouseX, mouseY);
     }
 }
 
@@ -351,8 +359,8 @@ function saveRoom(){
     console.log(walls);
     $.ajax({
             type: "post",
-            url: "/room/"+saveName,
-            data: {sendWalls: walls, sendFurniture: furniture},
+            url: "/room/" + saveName,
+            data: {'sendSubRooms': subrooms, 'sendFurniture': furniture},
             success: function(data) {
                 // todo on good save
             }
