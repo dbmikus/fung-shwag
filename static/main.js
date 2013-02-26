@@ -8,6 +8,16 @@ var subrooms = [];
 var roomClosed = false;
 //furniture is an array of furniture objects
 var furniture = [];
+//walls are stored as 4 tuples in the following way
+// [starting X coord, starting y coord, ending x cooord, ending y coord]
+var currentTool="none";
+var currentFurniture= "none";
+//used for creating walls
+var prevWallCoord = null;
+//the offset of the current view from the origin
+var xOffset = 0;
+var yOffset = 0;
+
 
 var furnitureTypes = 
 {
@@ -34,24 +44,17 @@ var furnitureTypes =
     "twinBed":{"topdown":true,"path":"static/icons/twinBed.svg"}
 }
 
-var a = Object.keys(furnitureTypes);
-for (var i =0; i< a.length; i++){
-    furnitureTypes[a[i]]["path"]= "static/icons/"+a[i]+".svg"; 
+for(key in furnitureTypes){
+    var temp = new Image;
+    temp.src = furnitureTypes[key]["path"];
+    furnitureTypes[key]["image"] = temp;
 }
 
 
-//walls are stored as 4 tuples in the following way
-// [starting X coord, starting y coord, ending x cooord, ending y coord]
-var currentTool="none";
-//used for creating walls
-var prevWallCoord = null;
-//the offset of the current view from the origin
-var xOffset = 0;
-var yOffset = 0;
 
 function main() {
     canvas.addEventListener("mousedown", canvasOnMouseDown, false);
-
+    canvas.addEventListener("mousemove", onMouseMove, false);
     // Adding listeners for all the tool buttons
 
     // Clicking on the wall_tool button toggles the wall drawing function
@@ -67,8 +70,28 @@ function main() {
     $("#load").click(loadRoom);
     $("#save").click(saveRoom);
 
+    for (key in furnitureTypes){
+        $("#addFurniture-"+key).click(selectFurnitureType(key));
+    }
+
+
     setUpScreen();
 }
+
+function selectFurnitureType(key){
+    var furnKey = key;
+    console.log(key)
+    return function(){
+        currentFurniture = furnKey;
+        if (currentTool ==="drawWall"){
+            toggleWallTool();
+        }
+        currentTool = "placeFurniture";
+    }
+}
+
+
+
 
 //binds ready and resize so that the canvas is alway sthe right side
 //called in main
@@ -86,6 +109,7 @@ function setUpScreen(){
     var f = Object.keys(furnitureTypes);
     for(var i=0; i<f.length; i++){
         var temp = $('<li>');
+        temp.attr("id","addFurniture-"+f[i]);
         temp.html("<img class='svg' src='/"+
             furnitureTypes[f[i]]["path"]
             +"' width='50' height='50'/>");
@@ -324,6 +348,17 @@ function plotWall (mouseX, mouseY) {
     // wall coordinate
     else {
         prevWallCoord = null;
+    }
+}
+
+function onMouseMove(event){
+    console.log(currentTool)
+    if(currentTool==="placeFurniture"){
+        var mouseX= event.x;
+        var mouseY= event.y - $("#toolbar").outerHeight(true);
+        
+        drawFurniture([mouseX,mouseY],[200,200],0,
+            furnitureTypes[currentFurniture]["image"]);
     }
 }
 
