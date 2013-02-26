@@ -3,6 +3,8 @@ var ctx = canvas.getContext("2d");
 //scale = pixels/foot
 var scale = 30;
 var walls = [];
+var rooms = [];
+var roomClosed = false;
 //furniture is an array of furniture objects
 var furniture = [];
 //walls are stored as 4 tuples in the following way
@@ -130,13 +132,13 @@ function drawBlueprint() {
     setUpBlueprint();
 
     // Drawing each wall in our wall array
-    var prevCoord = undefined;
+    var prevCoord = null;
     ctx.lineWidth= 5;
     ctx.strokeStyle="white"
     ctx.beginPath();
     for (var i = 0; i<walls.length; i++){
         // If there was no previous coordinate, we just move to the first one
-        if (prevCoord === undefined) {
+        if (prevCoord === null) {
             ctx.moveTo((walls[i].x+xOffset)*scale,(walls[i].y+yOffset)*scale);
             prevCoord = walls[i];
         }
@@ -150,7 +152,7 @@ function drawBlueprint() {
     ctx.closePath();
 
     // Draw current wall dot
-    if(prevWallCoord) {
+    if(prevWallCoord && currentTool === "drawWall") {
         ctx.strokeStyle = "black";
         ctx.lineWidth   = 1;
         ctx.fillStyle   = "red";
@@ -231,7 +233,7 @@ function checkLineIntersection(p1, p2) {
         var intersection = G.lineIntersection(p1, p2,
                                               walls[i], walls[i+1]);
         console.log('\n');
-        if (intersection !== undefined) {
+        if (intersection !== null) {
             return true;
         }
     }
@@ -254,6 +256,15 @@ function drawWall(mouseX, mouseY) {
             // then plot the point
             if (!checkLineIntersection(prevWallCoord, newWallCoord)) {
                 walls.push(prevWallCoord, newWallCoord);
+                // If we click on the start, close the room and finish
+                // drawing walls
+                if (newWallCoord.equals(walls[0])) {
+                    roomClosed = true;
+                    toggleWallTool();
+                    rooms.push(walls);
+                    prevWallCoord = null;
+                    walls = [];
+                }
                 prevWallCoord = newWallCoord;
                 drawBlueprint();
             }
@@ -293,7 +304,7 @@ function canvasOnMouseDown(event) {
 
 // Tool stuff
 function toggleWallTool(event) {
-    var wallButton = $(event.currentTarget);
+    var wallButton = $('#wall_tool');
     if (currentTool === "drawWall") {
         currentTool = "none";
         prevWallCoord = null;
