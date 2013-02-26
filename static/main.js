@@ -8,6 +8,38 @@ var subrooms = [];
 var roomClosed = false;
 //furniture is an array of furniture objects
 var furniture = [];
+
+var furnitureTypes = 
+{
+    "bed":{"topdown":true,"path":"static/icons/bed.svg"},
+    "bigFridge":{"topdown":false,"path":"static/icons/bigFridge.svg"},
+    "bunkBed":{"topdown":false,"path":"static/icons/bunkBed.svg"},
+    "chair":{"topdown":false,"path":"static/icons/chair.svg"},
+    "couch":{"topdown":false,"path":"static/icons/couch.svg"},
+    "desk":{"topdown":false,"path":"static/icons/desk.svg"},
+    "deskChair":{"topdown":false,"path":"static/icons/deskChair.svg"},
+    "door":{"topdown":false,"path":"static/icons/door.svg"},
+    "doubleBed":{"topdown":true,"path":"static/icons/doubleBed.svg"},
+    "dresser":{"topdown":false,"path":"static/icons/dresser.svg"},
+    "hamper":{"topdown":false,"path":"static/icons/hamper.svg"},
+    "lamp":{"topdown":false,"path":"static/icons/lamp.svg"},
+    "microwave":{"topdown":false,"path":"static/icons/microwave.svg"},
+    "miniFridge":{"topdown":false,"path":"static/icons/miniFridge.svg"},
+    "poop":{"topdown":true,"path":"static/icons/poop.svg"},
+    "roundTable":{"topdown":false,"path":"static/icons/roundTable.svg"},
+    "rug":{"topdown":false,"path":"static/icons/rug.svg"},
+    "shelves":{"topdown":false,"path":"static/icons/shelves.svg"},
+    "table":{"topdown":false,"path":"static/icons/table.svg"},
+    "trash":{"topdown":false,"path":"static/icons/trash.svg"},
+    "twinBed":{"topdown":true,"path":"static/icons/twinBed.svg"}
+}
+
+var a = Object.keys(furnitureTypes);
+for (var i =0; i< a.length; i++){
+    furnitureTypes[a[i]]["path"]= "static/icons/"+a[i]+".svg"; 
+}
+
+
 //walls are stored as 4 tuples in the following way
 // [starting X coord, starting y coord, ending x cooord, ending y coord]
 var currentTool="none";
@@ -38,7 +70,6 @@ function main() {
     setUpScreen();
 }
 
-
 //binds ready and resize so that the canvas is alway sthe right side
 //called in main
 function setUpScreen(){
@@ -50,6 +81,18 @@ function setUpScreen(){
         $('#blueprint').attr({width: $(window).width()-300, height: $(window).height()-26});
         drawBlueprint();
     });
+
+    var furnitureList = $("#furniturelist");
+    var f = Object.keys(furnitureTypes);
+    for(var i=0; i<f.length; i++){
+        var temp = $('<li>');
+        temp.html("<img class='svg' src='/"+
+            furnitureTypes[f[i]]["path"]
+            +"' width='50' height='50'/>");
+        temp.append(f[i])    
+        furnitureList.append(temp);
+    }
+
 }
 
 // Configures the background stuff for the blueprint

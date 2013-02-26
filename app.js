@@ -84,6 +84,11 @@ app.delete("/room", function(request, response){
 });
 
 
+app.get("/static/icons/:imagename", function (request, response) {
+    response.sendfile("static/icons/" + request.params.imagename);
+});
+
+
 // This is for serving files in the static directory
 app.get("/static/:staticFilename", function (request, response) {
     response.sendfile("static/" + request.params.staticFilename);
