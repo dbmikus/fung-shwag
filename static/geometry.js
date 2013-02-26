@@ -5,18 +5,35 @@ var G = (function () {
 var G = {};
 
 G.point = function (x, y) {
-    return {"x": x, "y": y};
+    var point = {"x": x, "y": y};
+
+    point.toString = function () {
+        return ("(" + point.x + ", " + point.y + ")");
+    }
+
+    point.equals = function (other) {
+        if (other === undefined || other === null) {
+            return false;
+        }
+        return (point.x === other.x && point.y === other.y);
+    }
+
+    return point;
 }
 
 
 // Checks if a point is between two other points, not counting the endpoints
 // of p2 and p3. That is, if p1 is on p2 or p3, we are fine
 G.pbetween = function (p1, p2, p3) {
-    var xbetween = (p1.x > p2.x && p1.x < p3.x)
-        || (p1.x < p2.x && p1.x > p3.x);
+    if (p1.equals(p2) || p1.equals(p3)) {
+        return false;
+    }
 
-    var ybetween = (p1.y > p2.y && p1.y < p3.y)
-        || (p1.y < p2.y && p1.y > p3.y);
+    var xbetween = (p1.x >= p2.x && p1.x <= p3.x)
+        || (p1.x <= p2.x && p1.x >= p3.x);
+
+    var ybetween = (p1.y >= p2.y && p1.y <= p3.y)
+        || (p1.y <= p2.y && p1.y >= p3.y);
 
     return (xbetween && ybetween);
 }
@@ -25,7 +42,7 @@ G.pbetween = function (p1, p2, p3) {
 // p1 and p2 constitutes a line vector directed from p1 to p2
 // p3 and p4 constitutes a line vector directed from p3 to p4
 // We want to see whether the line p1<-->p2 intersects line p3<-->p4
-function lineIntersection(p1, p2, p3, p4) {
+G.lineIntersection = function(p1, p2, p3, p4) {
     // Solve equations y1 = a1*x1 + b1
     //                 y2 = a2*x2 + b2
 
@@ -41,7 +58,7 @@ function lineIntersection(p1, p2, p3, p4) {
         if (G.pbetween(interPoint, p3, p4)) {
             return interPoint;
         } else {
-            return undefined;
+            return null;
         }
     }
 
@@ -63,12 +80,12 @@ function lineIntersection(p1, p2, p3, p4) {
                 if (G.pbetween(p2, p3, p4)) {
                     return p2;
                 }
-                return undefined;
+                return null;
             }
             // lines are parallel but have different x coordinates, so they
             // can never intersect
             else {
-                return undefined;
+                return null;
             }
         }
     }
@@ -92,15 +109,15 @@ function lineIntersection(p1, p2, p3, p4) {
                 if (G.pbetween(p2, p3, p4)) {
                     return p2;
                 }
-                return undefined;
+                return null;
             }
             // Lines are parallel but do not have same y offset, so they can never
             // intersect
             else {
-                return undefined;
+                return null;
             }
         }
-        // If slopes aren't equal, we y1 = y2 and solve for x
+        // If slopes aren't equal, we set y1 = y2 and solve for x
         // this is: x = (b2 - b1) / (a1 - a2)
         else {
             var xInter = (b2 - b1) / (a1 - a2);
@@ -114,7 +131,7 @@ function lineIntersection(p1, p2, p3, p4) {
             }
             // The point lies along the lines, but not along the line segments
             else {
-                return undefined;
+                return null;
             }
         }
     }

@@ -3,6 +3,9 @@ var ctx = canvas.getContext("2d");
 //scale = pixels/foot
 var scale = 30;
 var walls = [];
+// Rooms hold closed walls segments
+var subrooms = [];
+var roomClosed = false;
 //furniture is an array of furniture objects
 var furniture = [];
 //walls are stored as 4 tuples in the following way
@@ -125,37 +128,40 @@ function drawButtons() {
     drawButton(canvas.width-20, canvas.height/2, 0);
 }
 
-// Draws everything on the blueprint
-function drawBlueprint() {
-    setUpBlueprint();
-
+function drawWall (walls) {
     // Drawing each wall in our wall array
-    var prevCoord = undefined;
+    var prevCoord = null;
     ctx.lineWidth= 5;
     ctx.strokeStyle="white"
     ctx.beginPath();
     for (var i = 0; i<walls.length; i++){
         // If there was no previous coordinate, we just move to the first one
-        if (prevCoord === undefined) {
-            console.log("Setting prev at (" + walls[i].x + ", " + walls[i].y + ")");
+        if (prevCoord === null) {
             ctx.moveTo((walls[i].x+xOffset)*scale,(walls[i].y+yOffset)*scale);
             prevCoord = walls[i];
         }
         // Otherwise, draw from the previous to the current and then move to
         // the current
         else {
-            console.log("Drawing to (" + walls[i].x + ", " + walls[i].y + ")");
             ctx.lineTo((walls[i].x+xOffset)*scale,(walls[i].y+yOffset)*scale);
         }
     }
     ctx.stroke();
     ctx.closePath();
+}
+
+// Draws everything on the blueprint
+function drawBlueprint() {
+    setUpBlueprint();
+
+    subrooms.forEach(drawWall);
+    drawWall(walls);
 
     // Draw current wall dot
-    if(prevWallCoord) {
+    if(prevWallCoord && currentTool === "drawWall") {
         ctx.strokeStyle = "black";
         ctx.lineWidth   = 1;
-        ctx.fillStyle= "red";
+        ctx.fillStyle   = "red";
         drawRoundedRectangle(ctx, ((prevWallCoord.x+xOffset)*scale) - scale/4,
                              ((prevWallCoord.y+yOffset)*scale) - scale/4,
                              scale/2, scale/2, scale/4);
@@ -224,22 +230,52 @@ function checkPanClick(mouseX, mouseY) {
 }
 
 
-// Draws wall coordinates on the map
-function drawWall(mouseX, mouseY) {
+// Check that the line p1<-->p2 does not intersect any other lines
+// We guarantee that walls.length mod 2 === 0
+// Return true if there is a line intersection
+function checkLineIntersection(p1, p2) {
+    var i;
+    for (i = 0; i < walls.length; i += 2) {
+        var intersection = G.lineIntersection(p1, p2,
+                                              walls[i], walls[i+1]);
+        if (intersection !== null) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// Plots the wall coordinates on the map and then draws them
+function plotWall (mouseX, mouseY) {
     if (currentTool === "drawWall") {
         if (prevWallCoord === null) {
             prevWallCoord = G.point(Math.round(mouseX/scale)-xOffset,
                                     Math.round(mouseY/scale)-yOffset);
+            drawBlueprint();
         }
         else {
             var newWallCoord = G.point(Math.round(mouseX/scale)-xOffset,
                                        Math.round(mouseY/scale)-yOffset);
 
-            walls.push(prevWallCoord, newWallCoord);
-
-            prevWallCoord = newWallCoord;
+            // if there is no intersection,
+            // then plot the point
+            if (!checkLineIntersection(prevWallCoord, newWallCoord)) {
+                walls.push(prevWallCoord, newWallCoord);
+                // If we click on the start, close the room and finish
+                // drawing walls
+                if (newWallCoord.equals(walls[0])) {
+                    roomClosed = true;
+                    toggleWallTool();
+                    subrooms.push(walls);
+                    prevWallCoord = null;
+                    walls = [];
+                }
+                else {
+                    prevWallCoord = newWallCoord;
+                }
+                drawBlueprint();
+            }
         }
-        drawBlueprint();
     }
     // If we turned off the wall drawing function, then it resets the previous
     // wall coordinate
@@ -268,14 +304,14 @@ function canvasOnMouseDown(event) {
     // You should be able to click on the pan buttons even with the wall tool
     // functioning
     if (!pannedCanvas) {
-        drawWall(mouseX, mouseY);
+        plotWall(mouseX, mouseY);
     }
 }
 
 
 // Tool stuff
 function toggleWallTool(event) {
-    var wallButton = $(event.currentTarget);
+    var wallButton = $('#wall_tool');
     if (currentTool === "drawWall") {
         currentTool = "none";
         prevWallCoord = null;
@@ -323,8 +359,8 @@ function saveRoom(){
     console.log(walls);
     $.ajax({
             type: "post",
-            url: "/room/"+saveName,
-            data: {sendWalls: walls, sendFurniture: furniture},
+            url: "/room/" + saveName,
+            data: {'sendSubRooms': subrooms, 'sendFurniture': furniture},
             success: function(data) {
                 // todo on good save
             }
