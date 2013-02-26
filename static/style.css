@@ -38,7 +38,7 @@ h2  {
 #sidebar {
     width: 300px;
     color: lightblue;
-    background-color: #001087;
+    background-color: rgb(27,67,140);
     z-index: 0;
     position:absolute;
     top:0;

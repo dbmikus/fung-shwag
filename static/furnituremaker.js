@@ -13,6 +13,16 @@ assembly : []
 
 */
 
+//script taken from the url below
+<script type="text/javascript" src="http://canvg.googlecode.com/svn/trunk/rgbcolor.js"></script> 
+<script type="text/javascript" src="http://canvg.googlecode.com/svn/trunk/canvg.js"></script> 
+
+//load '../path/to/your.svg' in the canvas with id = 'canvas'
+//canvg('canvas', '../path/to/your.svg')
+
+//load a svg snippet in the canvas with id = 'drawingArea'
+//canvg(document.getElementById('drawingArea'), '<svg>...</svg>')
+
 // orientation is stored as radians, color as a hex, location as an array [x,y],
 // dimensions stored as an array [width, height]
 // ctx should be a 2d canvas context
@@ -120,3 +130,13 @@ function editFurniture( arguments){
 		furniture[i].color = arguments[2];
 	}
 }
+
+
+function drawFurniture(location, dimensions, orientation, svg){
+//im ont sure if this function is part of the script loaded or if its built into canvas
+//or if it even works. and how
+
+//BUT if this works, then svg is just the path to the SVG file that is storing our icon. 
+	ctx.drawSvg(svg , location[0] - (dimensions[0]/2), location[1] - (dimensions[1]/2) , dimensions[0], dimensions[1]);
+}
+
