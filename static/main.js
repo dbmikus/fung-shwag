@@ -49,11 +49,13 @@ function setUpScreen(){
     });
 }
 
+// Configures the background stuff for the blueprint
 function setUpBlueprint(){
     ctx.fillStyle = "#1B438C"
     ctx.fillRect(0,0,canvas.width,canvas.height);
     ctx.lineWidth =1;
 
+    // Drawing vertical grid lines
     for(var i = 0; i< (canvas.width)/scale; i++){
         if (i%4 === 0){
             ctx.strokeStyle="lightblue"
@@ -65,6 +67,7 @@ function setUpBlueprint(){
         ctx.stroke();
         ctx.closePath();
     }
+    // Drawing horizontal grid lines
     for(var i = 0; i< (canvas.height)/scale; i++){
         if (i%4 === 0){
             ctx.strokeStyle="lightblue"
@@ -79,75 +82,89 @@ function setUpBlueprint(){
     }
 }
 
-// Draws all of the onscreen buttons
-function drawButtons(){
-    // ctx.fillStyle = "#1B43AC";
-    // if(currentTool==="drawWall"){
-    //     ctx.fillStyle= "purple";
-    // }
 
-    ctx.fillStyle = "#1B43AC"
-    ctx.lineWidth= 4;
-    ctx.strokeStyle= "#1B436C"
-    drawRoundedRectangle(ctx,820,-20,100,60,10);
-    ctx.fillStyle="lightblue";
-    ctx.font = "40px Arial";
-    ctx.fillText("▲",850,32);
+// Draws a button onscreen. Draws with origin at center,
+// but rotates around center of button
+function drawButton(x,y, rotation) {
+    var bwidth = 50;
+    var bheight = 100;
+    // var buttonStroke = "#1B436C";
+    var buttonStroke = "#001067";
+    // var buttonFill = "#0010a7";
+    var buttonFill = fillStyle = "#1B43AC";
+    var blineWidth = 4;
 
-    ctx.fillStyle = "#0010a7"
-    ctx.lineWidth= 4;
-    ctx.strokeStyle= "#001067"
-    drawRoundedRectangle(ctx,-20,320,60,100,10);
-    ctx.fillStyle="lightblue";
-    ctx.font = "40px Arial";
-    ctx.fillText("◄",0,385);
+    ctx.save();
+    ctx.translate(x,y);
+    ctx.rotate(rotation);
 
-    ctx.fillStyle = "#1B43AC"
-    ctx.lineWidth= 4;
-    ctx.strokeStyle= "#1B436C"
-    drawRoundedRectangle(ctx,820,canvas.height-40,100,canvas.height+20,10);
-    ctx.fillStyle="lightblue";
-    ctx.font = "40px Arial";
-    ctx.fillText("▼",850,canvas.height-6);
+    var fontStyle = "40px Arial";
+    var fontFill = "lightblue";
 
-    ctx.fillStyle = "#1B43AC"
-    ctx.lineWidth= 4;
-    ctx.strokeStyle= "#1B436C"
-    drawRoundedRectangle(ctx,canvas.width-40,320,60,100,10);
-    ctx.fillStyle="lightblue";
-    ctx.font = "40px Arial";
-    ctx.fillText("►",canvas.width-35,385);
+    ctx.fillStyle = buttonFill;
+    ctx.lineWidth = blineWidth;
+    ctx.strokeStyle = buttonStroke;
+    drawRoundedRectangle(ctx, -bwidth/2, -bheight/2,
+                         bwidth, bheight, 10);
+    ctx.fillStyle = fontFill;
+    ctx.font = fontStyle;
+    ctx.fillText("►", 5 - bwidth/2, 65 - bheight/2);
 
+    ctx.restore();
 }
 
-function drawBlueprint(){
+// Draws all of the onscreen buttons
+function drawButtons() {
+    // Drawing top button
+    drawButton(canvas.width/2, 22, 3*Math.PI / 2);
+    // Drawing left button
+    drawButton(20, canvas.height/2, Math.PI);
+    // Drawing bottom button
+    drawButton(canvas.width/2, canvas.height-22, Math.PI/2);
+    // Drawing right button
+    drawButton(canvas.width-20, canvas.height/2, 0);
+}
+
+// Draws everything on the blueprint
+function drawBlueprint() {
     setUpBlueprint();
 
     // Drawing each wall in our wall array
-    for (var i =0; i<walls.length; i++){
-        ctx.lineWidth= 5;
-        ctx.strokeStyle="white"
-        ctx.beginPath();
-        ctx.moveTo((walls[i][0]+xOffset)*scale,(walls[i][1]+yOffset)*scale);
-        ctx.lineTo((walls[i][2]+xOffset)*scale,(walls[i][3]+yOffset)*scale);
-        ctx.stroke();
-        ctx.closePath();
+    var prevCoord = undefined;
+    ctx.lineWidth= 5;
+    ctx.strokeStyle="white"
+    ctx.beginPath();
+    for (var i = 0; i<walls.length; i++){
+        // If there was no previous coordinate, we just move to the first one
+        if (prevCoord === undefined) {
+            console.log("Setting prev at (" + walls[i].x + ", " + walls[i].y + ")");
+            ctx.moveTo((walls[i].x+xOffset)*scale,(walls[i].y+yOffset)*scale);
+            prevCoord = walls[i];
+        }
+        // Otherwise, draw from the previous to the current and then move to
+        // the current
+        else {
+            console.log("Drawing to (" + walls[i].x + ", " + walls[i].y + ")");
+            ctx.lineTo((walls[i].x+xOffset)*scale,(walls[i].y+yOffset)*scale);
+        }
     }
-    if(prevWallCoord){
+    ctx.stroke();
+    ctx.closePath();
+
+    // Draw current wall dot
+    if(prevWallCoord) {
         ctx.strokeStyle = "black";
         ctx.lineWidth   = 1;
         ctx.fillStyle= "red";
-        drawRoundedRectangle(ctx, ((prevWallCoord[0]+xOffset)*scale)-scale/4,
-                                ((prevWallCoord[1]+yOffset)*scale)-scale/4,
-                                scale/2, scale/2,scale/4)
+        drawRoundedRectangle(ctx, ((prevWallCoord.x+xOffset)*scale) - scale/4,
+                             ((prevWallCoord.y+yOffset)*scale) - scale/4,
+                             scale/2, scale/2, scale/4);
     }
-
     drawButtons();
 }
 
 
-
-function drawRoundedRectangle(ctx,x,y,width,height,radius){
+function drawRoundedRectangle(ctx,x,y,width,height,radius) {
     ctx.beginPath();
     ctx.moveTo(x,y+radius);
     ctx.lineTo(x,y+height-radius);
@@ -162,6 +179,74 @@ function drawRoundedRectangle(ctx,x,y,width,height,radius){
     ctx.stroke();
 }
 
+// Checks for a click on canvas can buttons.
+// Pans if there was such a click, and returns true to indicate click.
+// Returns false if we did not click on a button.
+function checkPanClick(mouseX, mouseY) {
+    // Pan up
+    // The center of the button's click location
+    var bcenter = G.point(canvas.width/2, 0 + 22);
+    if(mouseY >= 0 && mouseY <= bcenter.y + 50/2 &&
+       mouseX >= bcenter.x - 100/2 && mouseX <= bcenter.x + 100/2) {
+        yOffset+= 4;
+        drawBlueprint();
+        return true;
+    }
+    // Pan left
+    bcenter.x = 20;
+    bcenter.y = canvas.height/2;
+    if (mouseX >= 0 && mouseX <= bcenter.x + 50/2 &&
+        mouseY >= bcenter.y - 100/2 && mouseY <= bcenter.y + 100/2) {
+        xOffset+= 4;
+        drawBlueprint();
+        return true;
+    }
+    // Pan down
+    bcenter.x = canvas.width/2;
+    bcenter.y = canvas.height - 22;
+    if (mouseX >= bcenter.x - 100/2 && mouseX <=  bcenter.x + 100/2 &&
+        mouseY >= bcenter.y - 50/2 && mouseY <= canvas.height) {
+        yOffset-= 4;
+        drawBlueprint();
+        return true;
+    }
+    // Pan right
+    bcenter.x = canvas.width - 20;
+    bcenter.y = canvas.height/2;
+    if (mouseX >= bcenter.x - 50/2 && mouseX <= canvas.width &&
+        mouseY >= bcenter.y - 100/2 && mouseY <= bcenter.y + 100/2) {
+        xOffset-= 4;
+        drawBlueprint();
+        return true;
+    }
+
+    return false;
+}
+
+
+// Draws wall coordinates on the map
+function drawWall(mouseX, mouseY) {
+    if (currentTool === "drawWall") {
+        if (prevWallCoord === null) {
+            prevWallCoord = G.point(Math.round(mouseX/scale)-xOffset,
+                                    Math.round(mouseY/scale)-yOffset);
+        }
+        else {
+            var newWallCoord = G.point(Math.round(mouseX/scale)-xOffset,
+                                       Math.round(mouseY/scale)-yOffset);
+
+            walls.push(prevWallCoord, newWallCoord);
+
+            prevWallCoord = newWallCoord;
+        }
+        drawBlueprint();
+    }
+    // If we turned off the wall drawing function, then it resets the previous
+    // wall coordinate
+    else {
+        prevWallCoord = null;
+    }
+}
 
 // Mousedown events registered on the canvas
 function canvasOnMouseDown(event) {
@@ -171,51 +256,19 @@ function canvasOnMouseDown(event) {
     // canvas's top left as the origin
     var mouseY = event.y - $("#toolbar").outerHeight(true);
 
+    // At this point, mouseX and mouseY have their coordinate plane such that
+    // their origin is in the top left of the canvas
 
-    // Pan up
-    if(mouseY>0 && mouseY<40){
-        if(mouseX>820 && mouseX<920){
-            yOffset+= 4;
-            drawBlueprint();
-            return;
-        }
-    }
-    // Pan left
-    if(mouseX>0 && mouseX<40
-       && mouseY> 320 && mouseY<420){
-        xOffset+= 4;
-        drawBlueprint();
-        return;
-    }
-    // Pan down
-    if(mouseX>820 && mouseX<920
-       && mouseY>canvas.height-40 && mouseY<canvas.height){
-        yOffset-= 4;
-        drawBlueprint();
-        return;
-    }
-    // Pan right
-    if(mouseX>canvas.width-40 && mouseX<canvas.width
-       && mouseY> 320 && mouseY<420){
-        xOffset-= 4;
-        drawBlueprint();
-        return;
-    }
+    // Checks for clicks on the pan button, and pans canvas viewport if click
+    // cooresponds to a pan button
+    var pannedCanvas = checkPanClick(mouseX, mouseY);
 
-    if(currentTool==="drawWall"){
-        if(prevWallCoord===null){
-            prevWallCoord= [Math.round(mouseX/scale)-xOffset,
-                    Math.round(mouseY/scale)-yOffset];
-        }else{
-            var newWallCoord = [Math.round(mouseX/scale)-xOffset,
-                        Math.round(mouseY/scale)-yOffset]
-            walls.push([prevWallCoord[0],prevWallCoord[1],
-                newWallCoord[0],newWallCoord[1]]);
-            prevWallCoord=newWallCoord;
-        }
-        drawBlueprint();
-    }else{
-        prevWallCoord = null;
+
+    // If we panned the canvas, we shouldn't draw a wall part.
+    // You should be able to click on the pan buttons even with the wall tool
+    // functioning
+    if (!pannedCanvas) {
+        drawWall(mouseX, mouseY);
     }
 }
 

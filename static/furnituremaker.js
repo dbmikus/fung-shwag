@@ -50,6 +50,8 @@ function drawCircle(ctx, location, color, dimensions) {
     ctx.fill();
 }
 
+// Source from: http://stackoverflow.com/questions/2172798/how-to-draw-an-oval-in-html5-canvas
+// Author: Steve Tranby on StackOverflow
 function drawEllipse(ctx, location, orientation, color, dimensions) {
     var x = location[0];
     var y = location[1];
@@ -129,6 +131,7 @@ function editFurniture( arguments){
 	}
 }
 
+
 function drawFurniture(location, dimensions, orientation, svg){
 //im ont sure if this function is part of the script loaded or if its built into canvas
 //or if it even works. and how
@@ -136,3 +139,4 @@ function drawFurniture(location, dimensions, orientation, svg){
 //BUT if this works, then svg is just the path to the SVG file that is storing our icon. 
 	ctx.drawSvg(svg , location[0] - (dimensions[0]/2), location[1] - (dimensions[1]/2) , dimensions[0], dimensions[1]);
 }
+
