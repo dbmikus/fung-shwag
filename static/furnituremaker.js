@@ -137,6 +137,26 @@ function drawFurniture(location, dimensions, orientation, svg){
 //or if it even works. and how
 
 //BUT if this works, then svg is just the path to the SVG file that is storing our icon. 
-	ctx.drawSvg(svg , location[0] - (dimensions[0]/2), location[1] - (dimensions[1]/2) , dimensions[0], dimensions[1]);
+	//ctx.drawSvg(svg , location[0] - (dimensions[0]/2), location[1] - (dimensions[1]/2) , dimensions[0], dimensions[1]);
+
+//save canvas state	
+	ctx.save();
+
+
+//translate canvas to spot to be rotated around
+	ctx.translate(location[0], location[1]);
+	
+//Rotate the canvas(angle in radians)
+	ctx.rotate(orientation);
+	
+//draw it. This assumes the object svg is an image object with svg.source set as 
+// the path to the svg file. 
+	ctx.drawImage(svg, -(dimensions[0]/2) , -(dimensions[1]/2) ); 
+
+//rotate it back
+	ctx.rotate(-(orientation));
+	
+//restore canvas
+	ctx.restore();
 }
 
