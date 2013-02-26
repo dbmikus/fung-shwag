@@ -361,7 +361,9 @@ function plotWall (mouseX, mouseY) {
 
         // if there is no intersection,
         // then plot the point
-        if (!checkLineIntersection(prevWallCoord, newWallCoord)) {
+        //if (!checkLineIntersection(prevWallCoord, newWallCoord)) {
+        // TODO Temporarily disabled intersection checking. Debug intersection
+        if (true) {
             walls.push(prevWallCoord, newWallCoord);
             // If we click on the start, close the room and finish
             // drawing walls
