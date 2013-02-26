@@ -232,7 +232,6 @@ function checkLineIntersection(p1, p2) {
     for (i = 0; i < walls.length; i += 2) {
         var intersection = G.lineIntersection(p1, p2,
                                               walls[i], walls[i+1]);
-        console.log('\n');
         if (intersection !== null) {
             return true;
         }
