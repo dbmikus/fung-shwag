@@ -132,26 +132,26 @@ function editFurniture( arguments) {
 
 
 function drawFurniture(location, dimensions, orientation, svg){
-// I'm not sure if this function is part of the script loaded or if its built into canvas
-// or if it even works. and how
+    // I'm not sure if this function is part of the script loaded or if its built into canvas
+    // or if it even works. and how
 
-//save canvas state
+    //save canvas state
 	ctx.save();
 
 
-//translate canvas to spot to be rotated around
+    //translate canvas to spot to be rotated around
 	ctx.translate(location[0], location[1]);
 
-//Rotate the canvas(angle in radians)
+    //Rotate the canvas(angle in radians)
 	ctx.rotate(orientation);
 
-//draw it. This assumes the object svg is an image object with svg.source set as
-// the path to the svg file.
+    // draw it. This assumes the object svg is an image object with svg.source set as
+    // the path to the svg file.
 	ctx.drawImage(svg, -(dimensions[0]/2), -(dimensions[1]/2));
 
-//rotate it back
+    //rotate it back
 	ctx.rotate(-(orientation));
 
-//restore canvas
+    //restore canvas
 	ctx.restore();
 }

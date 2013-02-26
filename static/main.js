@@ -340,19 +340,48 @@ function zoomIn(event) {
     drawBlueprint();
 }
 
+
+// Removes object functions so that the point can be JSONified
+function loadFormatRooms(subrooms) {
+    // from https://developer.mozilla.org/en-US/
+    // docs/JavaScript/Reference/Global_Objects/Array/map
+    function returnInt(element){
+        return parseInt(element, 10);
+    }
+
+    return subrooms.map(function (walls) {
+        return walls.map(function (point) {
+            // parse the string ints to actual numbers
+            return G.point(returnInt(point.x),
+                           returnInt(point.y));
+        });
+    });
+}
+
+// TODO convert the loaded points back to actual points
 function loadRoom(){
     var roomId = $("#load-input").val();
     $.ajax({
       type: "get",
       url: "/room/"+roomId,
       success: function(data) {
-        walls = data.room["walls"];
-        furniture = data.room["furniture"];
-        drawBlueprint();
+          subrooms = loadFormatRooms(data.room["subrooms"]);
+          console.log(subrooms);
+          furniture = data.room["furniture"];
+          drawBlueprint();
       }
     });
 }
 
+// Removes object functions so that the point can be JSONified
+function saveFormatRooms(subrooms) {
+    return subrooms.map(function (walls) {
+        return walls.map(function (point) {
+            return {'x': point.x,
+                    'y': point.y};
+        });
+    });
+}
 
 function saveRoom(){
     var saveName = $("#save-input").val();
@@ -360,7 +389,8 @@ function saveRoom(){
     $.ajax({
             type: "post",
             url: "/room/" + saveName,
-            data: {'sendSubRooms': subrooms, 'sendFurniture': furniture},
+            data: {'sendSubRooms': saveFormatRooms(subrooms),
+                   'sendFurniture': furniture},
             success: function(data) {
                 // todo on good save
             }
