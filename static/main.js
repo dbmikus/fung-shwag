@@ -353,7 +353,6 @@ function plotWall (mouseX, mouseY) {
 }
 
 function onMouseMove(event){
-    console.log(currentTool)
     if(currentTool==="placeFurniture"){
         var mouseX= event.x;
         var mouseY= event.y - $("#toolbar").outerHeight(true);

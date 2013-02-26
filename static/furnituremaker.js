@@ -142,7 +142,7 @@ function drawFurniture(location, dimensions, orientation, svg){
 
     // draw it. This assumes the object svg is an image object with svg.source set as
     // the path to the svg file.
-	ctx.drawImage(svg, -(dimensions[0]/2), -(dimensions[1]/2));
+	ctx.drawImage(svg, -(dimensions[0]/4), -(dimensions[1]/4));
 
     //rotate it back
 	ctx.rotate(-(orientation));
