@@ -13,10 +13,6 @@ assembly : []
 
 */
 
-// script taken from the url below
-// <script type="text/javascript" src="http://canvg.googlecode.com/svn/trunk/rgbcolor.js"></script>
-// <script type="text/javascript" src="http://canvg.googlecode.com/svn/trunk/canvg.js"></script>
-
 //load '../path/to/your.svg' in the canvas with id = 'canvas'
 //canvg('canvas', '../path/to/your.svg')
 
@@ -137,7 +133,6 @@ function drawFurniture(location, dimensions, orientation, svg){
 
     //save canvas state
 	ctx.save();
-
 
     //translate canvas to spot to be rotated around
 	ctx.translate(location[0], location[1]);
