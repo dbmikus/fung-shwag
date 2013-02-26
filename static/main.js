@@ -137,14 +137,12 @@ function drawBlueprint() {
     for (var i = 0; i<walls.length; i++){
         // If there was no previous coordinate, we just move to the first one
         if (prevCoord === undefined) {
-            console.log("Setting prev at (" + walls[i].x + ", " + walls[i].y + ")");
             ctx.moveTo((walls[i].x+xOffset)*scale,(walls[i].y+yOffset)*scale);
             prevCoord = walls[i];
         }
         // Otherwise, draw from the previous to the current and then move to
         // the current
         else {
-            console.log("Drawing to (" + walls[i].x + ", " + walls[i].y + ")");
             ctx.lineTo((walls[i].x+xOffset)*scale,(walls[i].y+yOffset)*scale);
         }
     }
@@ -155,7 +153,7 @@ function drawBlueprint() {
     if(prevWallCoord) {
         ctx.strokeStyle = "black";
         ctx.lineWidth   = 1;
-        ctx.fillStyle= "red";
+        ctx.fillStyle   = "red";
         drawRoundedRectangle(ctx, ((prevWallCoord.x+xOffset)*scale) - scale/4,
                              ((prevWallCoord.y+yOffset)*scale) - scale/4,
                              scale/2, scale/2, scale/4);
@@ -224,22 +222,42 @@ function checkPanClick(mouseX, mouseY) {
 }
 
 
+// Check that the line p1<-->p2 does not intersect any other lines
+// We guarantee that walls.length mod 2 === 0
+// Return true if there is a line intersection
+function checkLineIntersection(p1, p2) {
+    var i;
+    for (i = 0; i < walls.length; i += 2) {
+        var intersection = G.lineIntersection(p1, p2,
+                                              walls[i], walls[i+1]);
+        console.log('\n');
+        if (intersection !== undefined) {
+            return true;
+        }
+    }
+    return false;
+}
+
 // Draws wall coordinates on the map
 function drawWall(mouseX, mouseY) {
     if (currentTool === "drawWall") {
         if (prevWallCoord === null) {
             prevWallCoord = G.point(Math.round(mouseX/scale)-xOffset,
                                     Math.round(mouseY/scale)-yOffset);
+            drawBlueprint();
         }
         else {
             var newWallCoord = G.point(Math.round(mouseX/scale)-xOffset,
                                        Math.round(mouseY/scale)-yOffset);
 
-            walls.push(prevWallCoord, newWallCoord);
-
-            prevWallCoord = newWallCoord;
+            // if there is no intersection,
+            // then plot the point
+            if (!checkLineIntersection(prevWallCoord, newWallCoord)) {
+                walls.push(prevWallCoord, newWallCoord);
+                prevWallCoord = newWallCoord;
+                drawBlueprint();
+            }
         }
-        drawBlueprint();
     }
     // If we turned off the wall drawing function, then it resets the previous
     // wall coordinate
