@@ -75,11 +75,6 @@ function main() {
     $("#load").click(loadRoom);
     $("#save").click(saveRoom);
 
-    for (key in furnitureTypes){
-        $("#addFurniture-"+key).click(selectFurnitureType(key));
-    }
-
-
     setUpScreen();
 }
 
@@ -117,11 +112,13 @@ function setUpScreen(){
         temp.html("<img class='svg' src='/"+
             furnitureTypes[f[i]]["path"]
             +"' width='50' height='50'/>");
-        temp.append(f[i])
+        temp.append(f[i])    
+        temp.click(selectFurnitureType(f[i]));
         furnitureList.append(temp);
     }
 
 }
+
 
 // Configures the background stuff for the blueprint
 function setUpBlueprint() {
@@ -365,9 +362,10 @@ function onMouseMove(event){
     if(currentTool==="placeFurniture"){
         var mouseX= event.x;
         var mouseY= event.y - $("#toolbar").outerHeight(true);
-
+        drawBlueprint();    
         drawFurniture([mouseX,mouseY],[200,200],0,
             furnitureTypes[currentFurniture]["image"]);
+    
     }
 }
 
