@@ -112,7 +112,7 @@ function setUpScreen(){
         temp.html("<img class='svg' src='/"+
             furnitureTypes[f[i]]["path"]
             +"' width='50' height='50'/>");
-        temp.append(f[i])    
+        temp.append(f[i])
         temp.click(selectFurnitureType(f[i]));
         furnitureList.append(temp);
     }
@@ -362,10 +362,14 @@ function onMouseMove(event){
     if(currentTool==="placeFurniture"){
         var mouseX= event.x;
         var mouseY= event.y - $("#toolbar").outerHeight(true);
-        drawBlueprint();    
-        drawFurniture([mouseX,mouseY],[200,200],0,
-            furnitureTypes[currentFurniture]["image"]);
-    
+        drawBlueprint();
+        // drawFurniture([mouseX,mouseY],[200,200],0,
+        //     furnitureTypes[currentFurniture]["image"]);
+
+        // TODO: why are dimensions a constant (200, 200)
+        drawFurniture(roundPoint(mouseX,mouseY),G.point(200,200),0,
+            furnitureTypes[currentFurniture].image);
+
     }
 }
 
