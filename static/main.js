@@ -1,3 +1,6 @@
+///////////////////
+// Global Values //
+///////////////////
 var canvas = document.getElementById("blueprint");
 var ctx = canvas.getContext("2d");
 //scale = pixels/foot
@@ -9,7 +12,7 @@ var roomClosed = false;
 //furniture is an array of furniture objects
 var furniture = [];
 
-var furnitureTypes = 
+var furnitureTypes =
 {
     "bed":{"topdown":true,"path":"static/icons/bed.svg"},
     "bigFridge":{"topdown":false,"path":"static/icons/bigFridge.svg"},
@@ -36,19 +39,21 @@ var furnitureTypes =
 
 var a = Object.keys(furnitureTypes);
 for (var i =0; i< a.length; i++){
-    furnitureTypes[a[i]]["path"]= "static/icons/"+a[i]+".svg"; 
+    furnitureTypes[a[i]]["path"]= "static/icons/"+a[i]+".svg";
 }
-
-
-//walls are stored as 4 tuples in the following way
+// walls are stored as 4 tuples in the following way
 // [starting X coord, starting y coord, ending x cooord, ending y coord]
 var currentTool="none";
-//used for creating walls
+// used for creating walls
 var prevWallCoord = null;
-//the offset of the current view from the origin
+// the offset of the current view from the origin
 var xOffset = 0;
 var yOffset = 0;
 
+
+/////////////////////////////
+// End of Global Variables //
+/////////////////////////////
 function main() {
     canvas.addEventListener("mousedown", canvasOnMouseDown, false);
 
@@ -89,7 +94,7 @@ function setUpScreen(){
         temp.html("<img class='svg' src='/"+
             furnitureTypes[f[i]]["path"]
             +"' width='50' height='50'/>");
-        temp.append(f[i])    
+        temp.append(f[i])
         furnitureList.append(temp);
     }
 
@@ -402,7 +407,7 @@ function loadFormatRooms(subrooms) {
 }
 
 // TODO convert the loaded points back to actual points
-function loadRoom(){
+function loadRoom() {
     var roomId = $("#load-input").val();
     $.ajax({
       type: "get",
