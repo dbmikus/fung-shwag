@@ -350,7 +350,7 @@ function unscalePoint(x,y) {
 
 function unscaleDim(x,y){
     return G.point((x) * scale,
-                   (y) * scale);   
+                   (y) * scale);
 }
 
 // Plots the wall coordinates on the map and then draws them
@@ -522,7 +522,7 @@ function loadFormatFurniture(furniture) {
         var temp = new Image();
         temp.src = furnObj.path;
         furnObj.image = temp;
-        furnObj.onload = drawBlueprint();
+        furnObj.onload = function () { drawBlueprint(); };
 
         return furnObj;
     });
@@ -566,7 +566,7 @@ function saveFormatPoint(p) {
 function saveFormatRooms(subrooms) {
     return subrooms.map(function (walls) {
         return walls.map(function (point) {
-            return saveFormatPoint(p);
+            return saveFormatPoint(point);
         });
     });
 }
