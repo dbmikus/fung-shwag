@@ -25,14 +25,8 @@ var prevWallCoord = null;
 var xOffset = 0;
 var yOffset = 0;
 
-var zoomInBtn = new Image;
-zoomInBtn.src = "static/icons/zoomIn.svg"
-
 var resize = new Image;
 resize.src = "static/icons/resize.svg"
-
-var zoomOutBtn = new Image;
-zoomOutBtn.src = "static/icons/zoomOut.svg"
 
 var rotate = new Image;
 rotate.src = "static/icons/rotate.svg"
@@ -592,8 +586,8 @@ function canvasMouseMove(event){
         var p = furniture[currentlySelectedFurniture].location;
         var unscaledP = unscalePoint(p.x, p.y);
         var scaledDims = G.point(
-            2*Math.abs(Math.round((mouseX-unscaledP.x)/scale)),
-            2*Math.abs(Math.round((mouseY-unscaledP.y)/scale)));
+            Math.max(1,2*Math.abs(Math.round((mouseX-unscaledP.x)/scale))),
+            Math.max(1,2*Math.abs(Math.round((mouseY-unscaledP.y)/scale))));
         var unscaledDims = unscaleDim(scaledDims.x, scaledDims.y);
         // TODO: why are dimensions a constant (200, 200)
          F.drawFurniture(unscaledP, unscaledDims,
@@ -678,8 +672,8 @@ function canvasOnMouseDown(event) {
             var p = furniture[currentlySelectedFurniture].location;
             var unscaledP = unscalePoint(p.x, p.y);
             var scaledDims = G.point(
-                2*Math.abs(Math.round((mouseX-unscaledP.x)/scale)),
-                2*Math.abs(Math.round((mouseY-unscaledP.y)/scale)));
+            Math.max(1,2*Math.abs(Math.round((mouseX-unscaledP.x)/scale))),
+            Math.max(1,2*Math.abs(Math.round((mouseY-unscaledP.y)/scale))));
 
             furniture[currentlySelectedFurniture].dimensions
                 = scaledDims;

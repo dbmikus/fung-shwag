@@ -62,7 +62,7 @@ load
 <a href="http://thenounproject.com/noun/cloud-download/#icon-No2786" target="_blank">Cloud Download</a> designed by <a href="http://thenounproject.com/somerandomdude" target="_blank">P.J. Onori</a> from The Noun Project
 
 cloudSave
-<a href="http://thenounproject.com/noun/cloud-upload/#icon-No2633" target="_blank">Cloud Upload</a> designed by <a href="http://thenounproject.com/adamwhitcroft" target="_blank">Adam Whitcroft</a> from The Noun Project
+<a href="http://thenounproject.com/noun/cloud-upload/#icon-No2787" target="_blank">Cloud Upload</a> designed by <a href="http://thenounproject.com/somerandomdude" target="_blank">P.J. Onori</a> from The Noun Project
 
 resize
 <a href="http://thenounproject.com/noun/resize/#icon-No5046" target="_blank">Resize</a> designed by <a href="http://thenounproject.com/DmitryBaranovskiy" target="_blank">Dmitry Baranovskiy</a> from The Noun Project
