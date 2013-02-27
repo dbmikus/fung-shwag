@@ -23,13 +23,13 @@ var prevWallCoord = null;
 var xOffset = 0;
 var yOffset = 0;
 
-var zoomIn = new Image;
+var zoomInBtn = new Image;
 zoomIn.src = "static/icons/zoomIn.svg"
 
 var resize = new Image;
 resize.src = "static/icons/resize.svg"
 
-var zoomOut = new Image;
+var zoomOutBtn = new Image;
 zoomOut.src = "static/icons/zoomOut.svg"
 
 var rotate = new Image;
@@ -274,11 +274,6 @@ function drawFurnitureButtons(furn){
                       innerIcon[3]], "green",[0,scale/2]);
 	ctx.drawImage(resize, innerIcon[1]-scale/3, innerIcon[3] - scale/3,
 					scale*.66,scale*.66);
-	// though it says draw furniture, this just draws svg files
-	
-	//F.drawFurniture( MoveCoords, [scale/2,scale/2],0, move); 
-	//F.drawFurniture( RotateCoords, [scale/2,scale/2], 0 , rotate);
-	//F.drawFurniture( ResizeCoords, [scale/2,scale/2] , 0 , resize);
 	
 
 	
@@ -745,6 +740,7 @@ function zoomIn(event) {
         scale+=10;
     drawBlueprint();
 }
+
 
 
 // from https://developer.mozilla.org/en-US/
