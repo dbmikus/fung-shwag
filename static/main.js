@@ -700,17 +700,31 @@ function toggleWallTool(event) {
 
 // Zooms the canvas out
 function zoomOut(event) {
-    if(scale>10)
+    var oldCols = canvas.width/scale;
+    var oldRows = canvas.height/scale;
+    if(scale>10){
         scale-=10;
+        var newCols = canvas.width/scale;
+        var newRows = canvas.height/scale;
+        xOffset += Math.round((newCols - oldCols)/2);
+        yOffset += Math.round((newRows - oldRows)/2);
+    }
     drawBlueprint();
 }
 
-// Zooms the canvas out
+
+// Zooms the canvas in
 function zoomIn(event) {
-    if(scale<80)
+    var oldCols = canvas.width/scale;
+    var oldRows = canvas.height/scale;
+    if(scale<80){
         scale+=10;
-    drawBlueprint();
-}
+        var newCols = canvas.width/scale;
+        var newRows = canvas.height/scale;
+        xOffset -= Math.round((oldCols - newCols)/2);
+        yOffset -= Math.round((oldRows - newRows)/2);
+    }
+    drawBlueprint();}
 
 
 // from https://developer.mozilla.org/en-US/
