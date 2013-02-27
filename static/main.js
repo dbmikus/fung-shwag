@@ -530,6 +530,23 @@ function canvasMouseMove(event){
                 angle,
                 furniture[currentlySelectedFurniture]['image']);
     }
+    if(currentTool === "resizeFurniture"){
+        var mouseX = event.x;
+        var mouseY = event.y - $("#toolbar").outerHeight(true);
+        drawBlueprint();
+
+        // Round and unround the point to snap it to grid
+        var p = furniture[currentlySelectedFurniture].location;
+        var unscaledP = unscalePoint(p.x, p.y);
+        var scaledDims = G.point(
+            2*Math.abs(Math.round((mouseX-unscaledP.x)/scale)),
+            2*Math.abs(Math.round((mouseY-unscaledP.y)/scale)));
+        var unscaledDims = unscaleDim(scaledDims.x, scaledDims.y);
+        // TODO: why are dimensions a constant (200, 200)
+         F.drawFurniture(unscaledP, unscaledDims, 
+                furniture[currentlySelectedFurniture]["orientation"],
+                furniture[currentlySelectedFurniture]['image']);
+    }
 
 
 }
@@ -592,6 +609,19 @@ function canvasOnMouseDown(event) {
             drawBlueprint();
             return;
         }
+        if (currentTool === "resizeFurniture"){
+            var p = furniture[currentlySelectedFurniture].location;
+            var unscaledP = unscalePoint(p.x, p.y);
+            var scaledDims = G.point(
+                2*Math.abs(Math.round((mouseX-unscaledP.x)/scale)),
+                2*Math.abs(Math.round((mouseY-unscaledP.y)/scale)));
+
+            furniture[currentlySelectedFurniture].dimensions
+                = scaledDims;
+            currentTool = "none";
+            drawBlueprint();
+            return;
+        }
 
 
         if(currentlySelectedFurniture!==-1){
@@ -626,7 +656,7 @@ function canvasOnMouseDown(event) {
             }
             //clicked the resize button
             if(distance(ResizeCoords[0],ResizeCoords[1],mouseX,mouseY)<radius){
-                alert("resize");
+                currentTool = "resizeFurniture";
                 return;
             }
 
@@ -723,6 +753,10 @@ function returnInt(element){
     return parseInt(element, 10);
 }
 
+function returnFloat(element){
+    return parseFloat(element,10);
+}
+
 // Adds in object functions so that the point can be used again
 function loadFormatRooms(subrooms) {
     return subrooms.map(function (walls) {
@@ -746,7 +780,8 @@ function loadFormatFurniture(furniture) {
                                 returnInt(furn.location.y)),
             'dimensions': G.point(returnInt(furn.dimensions.x),
                                   returnInt(furn.dimensions.y)),
-            'path': furn.path
+            'path': furn.path,
+            'orientation':returnFloat(furn.orientation)
         };
         var temp = new Image();
         temp.src = furnObj.path;
@@ -803,7 +838,8 @@ function saveFormatFurniture(furniture) {
         return {'type': furn.type,
                 'location': saveFormatPoint(furn.location),
                 'dimensions': saveFormatPoint(furn.dimensions),
-                'path': furn.path};
+                'path': furn.path,
+                'orientation': furn.orientation};
     });
 }
 
