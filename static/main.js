@@ -522,7 +522,7 @@ function loadFormatFurniture(furniture) {
         var temp = new Image();
         temp.src = furnObj.path;
         furnObj.image = temp;
-        furnObj.onload = function () { drawBlueprint(); };
+        furnObj.image.onload = function () { drawBlueprint(); };
 
         return furnObj;
     });
@@ -535,8 +535,6 @@ function loadRoom() {
         type: "get",
         url: "/room/"+roomId,
         success: function(data) {
-            console.log('LOAD ROOOOOM');
-            console.log(data);
             if (data.room['subrooms'] === undefined) {
                 subrooms = [];
             }
@@ -547,10 +545,7 @@ function loadRoom() {
                 furniture = [];
             }
             else {
-                //              console.log(data.room);
                 furniture = loadFormatFurniture(data.room["furniture"]);
-                console.log('FUUUUUUUUUUUUUUUUCK');
-                console.log(furniture);
             }
             drawBlueprint();
         }
