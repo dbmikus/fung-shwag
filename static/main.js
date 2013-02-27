@@ -225,7 +225,7 @@ function drawFurniture(furniture) {
     furniture.forEach(function (furn) {
         var p = furn.location;
         var unscaledP = unscalePoint(p.x, p.y);
-        var unscaledDims = unscalePoint(furn.dimensions.x, furn.dimensions.y);
+        var unscaledDims = unscaleDim(furn.dimensions.x, furn.dimensions.y);
 
         // TODO why are dimensions a constant?
         F.drawFurniture(unscaledP, unscaledDims, 0, furn.image);
@@ -348,6 +348,11 @@ function unscalePoint(x,y) {
                    (y + yOffset) * scale);
 }
 
+function unscaleDim(x,y){
+    return G.point((x) * scale,
+                   (y) * scale);   
+}
+
 // Plots the wall coordinates on the map and then draws them
 function plotWall (mouseX, mouseY) {
     if (prevWallCoord === null) {
@@ -408,9 +413,7 @@ function onMouseMove(event){
         var pscaled = scalePoint(mouseX, mouseY);
         var psnappedPixels = unscalePoint(pscaled.x, pscaled.y);
         var scaledDims = furnitureTypes[currentFurniture].dimensions;
-        var unscaledDims = unscalePoint(scaledDims.x, scaledDims.y);
-
-
+        var unscaledDims = unscaleDim(scaledDims.x, scaledDims.y);
         // TODO: why are dimensions a constant (200, 200)
          F.drawFurniture(psnappedPixels, unscaledDims, 0,
                          furnitureTypes[currentFurniture]['image']);
