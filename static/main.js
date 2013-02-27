@@ -476,7 +476,6 @@ function deleteWallInProgress() {
     // coordinate
     // We expect that walls.coordinates mod 2 === 0
     if (walls.coordinates.length > 0) {
-        console.log('should delete');
         prevWallCoord = walls.coordinates[walls.coordinates.length - 2];
         walls.coordinates.splice(walls.coordinates.length - 2, 2);
     }
