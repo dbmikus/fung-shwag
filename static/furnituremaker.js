@@ -133,21 +133,31 @@ F.drawFurniture = function(location, dimensions, orientation, svg){
     // translate canvas to spot to be rotated around
     // We draw the furniture around the center of the x and y coordinates
 	ctx.translate(location.x, location.y);
-
+	ctx.strokeStyle= "black";
+	ctx.lineWidth = 4;
     //Rotate the canvas(angle in radians)
 	ctx.rotate(orientation);
-
+	ctx.strokeRect(-(dimensions.x/2), -(dimensions.y/2)
+		,dimensions.x, dimensions.y)
     // draw it. This assumes the object svg is an image object with svg.source
     // set as the path to the svg file.
     // Since we translated to the center and we draw from top left, we must go
     // halfway to the left and halfway to the top to correctly draw centered
     // on x and y
-    ctx.drawImage(svg, -(dimensions.x/2), -(dimensions.y/2),
-                  dimensions.x, dimensions.y);
-
 
     //rotate it back
 	ctx.rotate(-(orientation));
+
+	// draws icons inside the outer edge of the furniture
+	// .65 as wide as the shorter dimension
+    var minside = Math.min(dimensions.x, dimensions.y);
+    var squareWidth = .65 * minside;
+
+
+    ctx.drawImage(svg, -(squareWidth/2), -(squareWidth/2),
+        squareWidth, squareWidth);
+
+
 
     //restore canvas
 	ctx.restore();
