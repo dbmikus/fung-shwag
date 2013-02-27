@@ -83,3 +83,15 @@ trash.src = "/icons/trash.svg";
 //twinBed
 var twinBed = new Image;
 twinBed.src = "/icons/twinBed.svg";
+
+//zoomIn
+var zoomIn = new Image;
+zoomIn.src = "/icons/zoomIn.svg";
+
+//zoomOut
+var zoomOut = new Image;
+zoomOut.src = "/icons/zoomOut.svg";
+
+//roomTool
+var roomTool = new Image;
+roomTool.src = "/icons/roomTool.png"; 

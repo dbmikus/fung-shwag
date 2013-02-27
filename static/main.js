@@ -25,6 +25,24 @@ var prevWallCoord = null;
 var xOffset = 0;
 var yOffset = 0;
 
+var zoomInBtn = new Image;
+zoomIn.src = "static/icons/zoomIn.svg"
+
+var resize = new Image;
+resize.src = "static/icons/resize.svg"
+
+var zoomOutBtn = new Image;
+zoomOut.src = "static/icons/zoomOut.svg"
+
+var rotate = new Image;
+rotate.src = "static/icons/rotate.svg" 
+
+var move = new Image; 
+move.src = "static/icons/move.svg"
+
+var delButton = new Image; 
+delButton.src = "static/icons/delete.svg"
+
 
 var furnitureTypes =
 {
@@ -238,18 +256,29 @@ function drawFurnitureButtons(furn){
     var unscaledP = unscalePoint(p.x, p.y);
     var unscaledDims = unscaleDim(furn.dimensions.x, furn.dimensions.y);
     var innerIcon = getInnerIconPosition(furn);
-
+	
     F.drawCircle(ctx, [innerIcon[0],innerIcon[2]],"red",[0,scale/2]);
-
+	ctx.drawImage(delButton, innerIcon[0] -scale/3, innerIcon[2]-scale/3,
+        scale*.66,  scale*.66);
+		
     F.drawCircle(ctx,[(innerIcon[0]+innerIcon[1])/2,
                       (innerIcon[2]+innerIcon[3])/2], "purple",[0,scale/2]);
+	ctx.drawImage(move,(innerIcon[0] +innerIcon[1])/2 - scale/3, 
+					(innerIcon[2] + innerIcon[3])/2 -scale/3,
+						scale*.66,  scale*.66);
 
     F.drawCircle(ctx,[innerIcon[1]+20,
                       (innerIcon[2]+innerIcon[3])/2], "yellow",[0,scale/2]);
-
+	ctx.drawImage(rotate, innerIcon[1]+20 -scale/3, 
+					(innerIcon[2] + innerIcon[3])/2 - scale/3,
+						scale*.66, scale*.66);
     F.drawCircle(ctx,[innerIcon[1],
                       innerIcon[3]], "green",[0,scale/2]);
+	ctx.drawImage(resize, innerIcon[1]-scale/3, innerIcon[3] - scale/3,
+					scale*.66,scale*.66);
+	
 
+	
 }
 
 
@@ -760,17 +789,32 @@ function toggleWallTool(event) {
 
 // Zooms the canvas out
 function zoomOut(event) {
-    if(scale>10)
+    var oldCols = canvas.width/scale;
+    var oldRows = canvas.height/scale;
+    if(scale>10){
         scale-=10;
+        var newCols = canvas.width/scale;
+        var newRows = canvas.height/scale;
+        xOffset += Math.round((newCols - oldCols)/2);
+        yOffset += Math.round((newRows - oldRows)/2);
+    }
     drawBlueprint();
 }
 
-// Zooms the canvas out
+
+// Zooms the canvas in
 function zoomIn(event) {
-    if(scale<80)
+    var oldCols = canvas.width/scale;
+    var oldRows = canvas.height/scale;
+    if(scale<80){
         scale+=10;
-    drawBlueprint();
-}
+        var newCols = canvas.width/scale;
+        var newRows = canvas.height/scale;
+        xOffset -= Math.round((oldCols - newCols)/2);
+        yOffset -= Math.round((oldRows - newRows)/2);
+    }
+    drawBlueprint();}
+
 
 
 // from https://developer.mozilla.org/en-US/
