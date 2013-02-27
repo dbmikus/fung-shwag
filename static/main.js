@@ -593,8 +593,8 @@ function canvasMouseMove(event){
         var p = furniture[currentlySelectedFurniture].location;
         var unscaledP = unscalePoint(p.x, p.y);
         var scaledDims = G.point(
-            2*Math.abs(Math.round((mouseX-unscaledP.x)/scale)),
-            2*Math.abs(Math.round((mouseY-unscaledP.y)/scale)));
+            Math.max(1,2*Math.abs(Math.round((mouseX-unscaledP.x)/scale))),
+            Math.max(1,2*Math.abs(Math.round((mouseY-unscaledP.y)/scale))));
         var unscaledDims = unscaleDim(scaledDims.x, scaledDims.y);
         // TODO: why are dimensions a constant (200, 200)
          F.drawFurniture(unscaledP, unscaledDims,
@@ -679,8 +679,8 @@ function canvasOnMouseDown(event) {
             var p = furniture[currentlySelectedFurniture].location;
             var unscaledP = unscalePoint(p.x, p.y);
             var scaledDims = G.point(
-                2*Math.abs(Math.round((mouseX-unscaledP.x)/scale)),
-                2*Math.abs(Math.round((mouseY-unscaledP.y)/scale)));
+            Math.max(1,2*Math.abs(Math.round((mouseX-unscaledP.x)/scale))),
+            Math.max(1,2*Math.abs(Math.round((mouseY-unscaledP.y)/scale))));
 
             furniture[currentlySelectedFurniture].dimensions
                 = scaledDims;
