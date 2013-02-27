@@ -35,12 +35,12 @@ var zoomOutBtn = new Image;
 zoomOut.src = "static/icons/zoomOut.svg"
 
 var rotate = new Image;
-rotate.src = "static/icons/rotate.svg" 
+rotate.src = "static/icons/rotate.svg"
 
-var move = new Image; 
+var move = new Image;
 move.src = "static/icons/move.svg"
 
-var delButton = new Image; 
+var delButton = new Image;
 delButton.src = "static/icons/delete.svg"
 
 
@@ -256,29 +256,29 @@ function drawFurnitureButtons(furn){
     var unscaledP = unscalePoint(p.x, p.y);
     var unscaledDims = unscaleDim(furn.dimensions.x, furn.dimensions.y);
     var innerIcon = getInnerIconPosition(furn);
-	
+
     F.drawCircle(ctx, [innerIcon[0],innerIcon[2]],"red",[0,scale/2]);
 	ctx.drawImage(delButton, innerIcon[0] -scale/3, innerIcon[2]-scale/3,
         scale*.66,  scale*.66);
-		
+
     F.drawCircle(ctx,[(innerIcon[0]+innerIcon[1])/2,
                       (innerIcon[2]+innerIcon[3])/2], "purple",[0,scale/2]);
-	ctx.drawImage(move,(innerIcon[0] +innerIcon[1])/2 - scale/3, 
+	ctx.drawImage(move,(innerIcon[0] +innerIcon[1])/2 - scale/3,
 					(innerIcon[2] + innerIcon[3])/2 -scale/3,
 						scale*.66,  scale*.66);
 
     F.drawCircle(ctx,[innerIcon[1]+20,
                       (innerIcon[2]+innerIcon[3])/2], "yellow",[0,scale/2]);
-	ctx.drawImage(rotate, innerIcon[1]+20 -scale/3, 
+	ctx.drawImage(rotate, innerIcon[1]+20 -scale/3,
 					(innerIcon[2] + innerIcon[3])/2 - scale/3,
 						scale*.66, scale*.66);
     F.drawCircle(ctx,[innerIcon[1],
                       innerIcon[3]], "green",[0,scale/2]);
 	ctx.drawImage(resize, innerIcon[1]-scale/3, innerIcon[3] - scale/3,
 					scale*.66,scale*.66);
-	
 
-	
+
+
 }
 
 
@@ -574,8 +574,11 @@ function canvasMouseMove(event){
         var unscaledDims = unscaleDim(
             furniture[currentlySelectedFurniture].dimensions.x,
             furniture[currentlySelectedFurniture].dimensions.y);
-        var angle = Math.atan((unscaledP.y-mouseY)/
-            (unscaledP.x-mouseX));
+        // Rounds the angle to a multiple of Math.PI / 8
+        // base on trigonometry stuff
+        var angle = G.roundTo(Math.PI/8,
+                              Math.atan((unscaledP.y-mouseY) /
+                                        (unscaledP.x-mouseX)));
 
         F.drawFurniture(unscaledP, unscaledDims,
                 angle,
@@ -662,8 +665,9 @@ function canvasOnMouseDown(event) {
         if (currentTool === "rotateFurniture"){
             var p = furniture[currentlySelectedFurniture].location;
             var unscaledP = unscalePoint(p.x, p.y);
-            var angle = Math.atan((unscaledP.y-mouseY)/
-                (unscaledP.x-mouseX));
+            var angle = G.roundTo(Math.PI/8,
+                                  Math.atan((unscaledP.y-mouseY) /
+                                            (unscaledP.x-mouseX)));
 
             furniture[currentlySelectedFurniture]["orientation"]
                 = angle;
