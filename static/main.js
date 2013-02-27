@@ -6,7 +6,9 @@ var ctx = canvas.getContext("2d");
 //scale = pixels/foot
 var scale = 30;
 // Walls is of form: {'color': string, 'coordinates': [...]}
-var walls = {'color': 'white', 'coordinates': []};
+var walls = {'status': 'unselected',
+             'color': 'white',
+             'coordinates': []};
 // Rooms hold closed walls segments
 var subrooms = [];
 var roomClosed = false;
@@ -33,12 +35,12 @@ var zoomOutBtn = new Image;
 zoomOutBtn.src = "static/icons/zoomOut.svg"
 
 var rotate = new Image;
-rotate.src = "static/icons/rotate.svg" 
+rotate.src = "static/icons/rotate.svg"
 
-var move = new Image; 
+var move = new Image;
 move.src = "static/icons/move.svg"
 
-var delButton = new Image; 
+var delButton = new Image;
 delButton.src = "static/icons/delete.svg"
 
 
@@ -254,29 +256,29 @@ function drawFurnitureButtons(furn){
     var unscaledP = unscalePoint(p.x, p.y);
     var unscaledDims = unscaleDim(furn.dimensions.x, furn.dimensions.y);
     var innerIcon = getInnerIconPosition(furn);
-	
+
     F.drawCircle(ctx, [innerIcon[0],innerIcon[2]],"red",[0,scale/2]);
 	ctx.drawImage(delButton, innerIcon[0] -scale/3, innerIcon[2]-scale/3,
         scale*.66,  scale*.66);
-		
+
     F.drawCircle(ctx,[(innerIcon[0]+innerIcon[1])/2,
                       (innerIcon[2]+innerIcon[3])/2], "purple",[0,scale/2]);
-	ctx.drawImage(move,(innerIcon[0] +innerIcon[1])/2 - scale/3, 
+	ctx.drawImage(move,(innerIcon[0] +innerIcon[1])/2 - scale/3,
 					(innerIcon[2] + innerIcon[3])/2 -scale/3,
 						scale*.66,  scale*.66);
 
     F.drawCircle(ctx,[innerIcon[1]+20,
                       (innerIcon[2]+innerIcon[3])/2], "yellow",[0,scale/2]);
-	ctx.drawImage(rotate, innerIcon[1]+20 -scale/3, 
+	ctx.drawImage(rotate, innerIcon[1]+20 -scale/3,
 					(innerIcon[2] + innerIcon[3])/2 - scale/3,
 						scale*.66, scale*.66);
     F.drawCircle(ctx,[innerIcon[1],
                       innerIcon[3]], "green",[0,scale/2]);
 	ctx.drawImage(resize, innerIcon[1]-scale/3, innerIcon[3] - scale/3,
 					scale*.66,scale*.66);
-	
 
-	
+
+
 }
 
 
@@ -423,6 +425,7 @@ function unscaleDim(x,y){
 
 // Plots the wall coordinates on the map and then draws them
 function plotWall (mouseX, mouseY) {
+    walls.status = 'selected';
     if (prevWallCoord === null) {
         prevWallCoord = scalePoint(mouseX, mouseY);
         drawBlueprint();
@@ -468,20 +471,57 @@ function plotFurniture(x, y) {
     drawBlueprint();
 }
 
+function deleteWallInProgress() {
+    // If we are working on a current wall, then just delete the last
+    // coordinate
+    // We expect that walls.coordinates mod 2 === 0
+    if (walls.coordinates.length > 0) {
+        console.log('should delete');
+        prevWallCoord = walls.coordinates[walls.coordinates.length - 2];
+        walls.coordinates.splice(walls.coordinates.length - 2, 2);
+    }
+    else {
+        prevWallCoord = null;
+    }
+}
+
 function canvasKeyDown(event) {
     var dKey = 68;
     var keyCode = event.keyCode;
 
     // if we hit the "d" key,
     if (keyCode === dKey) {
+        // Go through each finished subroom, and if it is selected, delete it
+        for(var i = 0; i < subrooms.length; i++) {
+            var subroom = subrooms[i];
+            if (subroom.status === 'selected') {
+                subrooms.splice(i,1);
+                i--;
+            }
+        }
 
+        deleteWallInProgress();
+
+        drawBlueprint();
     }
 }
 
+function onPrevWallCoord(x,y) {
+    var unscaled = unscalePoint(prevWallCoord.x, prevWallCoord.y);
+    var leftX = unscaled.x - scale/4;
+    var rightX = unscaled.x + scale/4;
+    var topY = unscaled.y - scale/4;
+    var botY = unscaled.y + scale/4;
+
+    return (leftX <= x && x <= rightX
+            && topY <= y && y <= botY);
+}
+
 function canvasMouseMove(event){
+    var mouseX = event.x;
+    var mouseY = event.y - $("#toolbar").outerHeight(true);
+
     if(currentTool==="placeFurniture"){
-        var mouseX = event.x;
-        var mouseY = event.y - $("#toolbar").outerHeight(true);
         drawBlueprint();
 
         // Round and unround the point to snap it to grid
@@ -492,7 +532,23 @@ function canvasMouseMove(event){
         // TODO: why are dimensions a constant (200, 200)
          F.drawFurniture(psnappedPixels, unscaledDims, 0,
                          furnitureTypes[currentFurniture]['image']);
+    }
 
+    if (prevWallCoord !== null && prevWallCoord !== undefined) {
+        drawBlueprint();
+
+        var unscaled = unscalePoint(prevWallCoord.x, prevWallCoord.y);
+
+        if (onPrevWallCoord(mouseX, mouseY)) {
+            F.drawRectangle(ctx,
+                            [unscaled.x, unscaled.y],
+                            Math.PI/4, 'black',
+                            [scale/2 - 2, 4]);
+            F.drawRectangle(ctx,
+                            [unscaled.x, unscaled.y],
+                            Math.PI*3/4, 'black',
+                            [scale/2 - 2, 4]);
+        }
     }
     if(currentTool==="moveFurniture"){
         var mouseX = event.x;
@@ -504,7 +560,7 @@ function canvasMouseMove(event){
         var psnappedPixels = unscalePoint(pscaled.x, pscaled.y);
         var scaledDims = furniture[currentlySelectedFurniture].dimensions;
         var unscaledDims = unscaleDim(scaledDims.x, scaledDims.y);
-        F.drawFurniture(psnappedPixels, unscaledDims, 
+        F.drawFurniture(psnappedPixels, unscaledDims,
                 furniture[currentlySelectedFurniture]["orientation"],
                 furniture[currentlySelectedFurniture]['image']);
     }
@@ -518,10 +574,13 @@ function canvasMouseMove(event){
         var unscaledDims = unscaleDim(
             furniture[currentlySelectedFurniture].dimensions.x,
             furniture[currentlySelectedFurniture].dimensions.y);
-        var angle = Math.atan((unscaledP.y-mouseY)/
-            (unscaledP.x-mouseX));
+        // Rounds the angle to a multiple of Math.PI / 8
+        // base on trigonometry stuff
+        var angle = G.roundTo(Math.PI/8,
+                              Math.atan((unscaledP.y-mouseY) /
+                                        (unscaledP.x-mouseX)));
 
-        F.drawFurniture(unscaledP, unscaledDims, 
+        F.drawFurniture(unscaledP, unscaledDims,
                 angle,
                 furniture[currentlySelectedFurniture]['image']);
     }
@@ -538,7 +597,7 @@ function canvasMouseMove(event){
             2*Math.abs(Math.round((mouseY-unscaledP.y)/scale)));
         var unscaledDims = unscaleDim(scaledDims.x, scaledDims.y);
         // TODO: why are dimensions a constant (200, 200)
-         F.drawFurniture(unscaledP, unscaledDims, 
+         F.drawFurniture(unscaledP, unscaledDims,
                 furniture[currentlySelectedFurniture]["orientation"],
                 furniture[currentlySelectedFurniture]['image']);
     }
@@ -571,7 +630,16 @@ function canvasOnMouseDown(event) {
     if (!pannedCanvas) {
         if (currentTool === "drawWall") {
             currentlySelectedFurniture = -1;
-            plotWall(mouseX, mouseY);
+            if  (prevWallCoord !== null && prevWallCoord !== undefined
+                 && onPrevWallCoord(mouseX, mouseY)) {
+                deleteWallInProgress();
+            }
+            // We must store wasOnPrev so that when we delete a coordinate we
+            // don't just readd that coordinate
+            else {
+                plotWall(mouseX, mouseY);
+            }
+            drawBlueprint();
             return;
         }
         // If we turned off the wall drawing function,
@@ -582,10 +650,12 @@ function canvasOnMouseDown(event) {
 
         if (currentTool === "placeFurniture") {
             plotFurniture(mouseX, mouseY);
+            drawBlueprint();
             return;
         }
+
         if (currentTool === "moveFurniture"){
-            furniture[currentlySelectedFurniture]["location"] 
+            furniture[currentlySelectedFurniture]["location"]
                     = scalePoint(mouseX,mouseY);
             currentTool = "none";
             drawBlueprint();
@@ -595,8 +665,9 @@ function canvasOnMouseDown(event) {
         if (currentTool === "rotateFurniture"){
             var p = furniture[currentlySelectedFurniture].location;
             var unscaledP = unscalePoint(p.x, p.y);
-            var angle = Math.atan((unscaledP.y-mouseY)/
-                (unscaledP.x-mouseX));
+            var angle = G.roundTo(Math.PI/8,
+                                  Math.atan((unscaledP.y-mouseY) /
+                                            (unscaledP.x-mouseX)));
 
             furniture[currentlySelectedFurniture]["orientation"]
                 = angle;
@@ -619,7 +690,7 @@ function canvasOnMouseDown(event) {
         }
 
 
-        if(currentlySelectedFurniture!==-1){
+        if(currentlySelectedFurniture!==-1) {
             // first set up coordinates for the centers of all 4 buttons
             var innerIcon = getInnerIconPosition(furniture[currentlySelectedFurniture]);
             var DelCoords = [innerIcon[0],innerIcon[2]];
@@ -654,10 +725,6 @@ function canvasOnMouseDown(event) {
                 currentTool = "resizeFurniture";
                 return;
             }
-
-
-
-
         }
 
 
@@ -678,13 +745,7 @@ function canvasOnMouseDown(event) {
             currentlySelectedFurniture = -1;
             drawBlueprint();
         }
-
-
-
-
     }
-
-
 }
 
 function distance (x,y,a,b){
@@ -713,8 +774,11 @@ function toggleWallTool(event) {
     var wallButton = $('#wall_tool');
     if (currentTool === "drawWall") {
         currentTool = "none";
+        walls.status = 'unselected';
         subrooms.push(walls);
-        walls = {'color': 'white', 'coordinates': []};
+        walls = {'status': 'unselected',
+                 'color': 'white',
+                 'coordinates': []};
         prevWallCoord = null;
         wallButton.css("background-color", "");
     } else {
@@ -729,17 +793,31 @@ function toggleWallTool(event) {
 
 // Zooms the canvas out
 function zoomOut(event) {
-    if(scale>10)
+    var oldCols = canvas.width/scale;
+    var oldRows = canvas.height/scale;
+    if(scale>10){
         scale-=10;
+        var newCols = canvas.width/scale;
+        var newRows = canvas.height/scale;
+        xOffset += Math.round((newCols - oldCols)/2);
+        yOffset += Math.round((newRows - oldRows)/2);
+    }
     drawBlueprint();
 }
 
-// Zooms the canvas out
+
+// Zooms the canvas in
 function zoomIn(event) {
-    if(scale<80)
+    var oldCols = canvas.width/scale;
+    var oldRows = canvas.height/scale;
+    if(scale<80){
         scale+=10;
-    drawBlueprint();
-}
+        var newCols = canvas.width/scale;
+        var newRows = canvas.height/scale;
+        xOffset -= Math.round((oldCols - newCols)/2);
+        yOffset -= Math.round((oldRows - newRows)/2);
+    }
+    drawBlueprint();}
 
 
 
@@ -757,6 +835,7 @@ function returnFloat(element){
 function loadFormatRooms(subrooms) {
     return subrooms.map(function (walls) {
         return {
+            'status': 'unselected',
             'color': walls.color,
             'coordinates': walls.coordinates.map(function (point) {
                 // parse the string ints to actual numbers
