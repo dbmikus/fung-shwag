@@ -49,3 +49,29 @@ shelves
 poop
 <a href="http://thenounproject.com/noun/poop/#icon-No5160" target="_blank">Poop</a> designed by <a href="http://thenounproject.com/illyism" target="_blank">Ilias Ismanalijev</a> from The Noun Project
 
+zoomIn
+<a href="http://thenounproject.com/noun/zoom/#icon-No8342" target="_blank">Zoom</a> designed by <a href="http://thenounproject.com/lemonliu" target="_blank">Lemon Liu</a> from The Noun Project
+
+zoomOut
+<a href="http://thenounproject.com/noun/zoom-out/#icon-No8343" target="_blank">Zoom Out</a> designed by <a href="http://thenounproject.com/lemonliu" target="_blank">Lemon Liu</a> from The Noun Project
+
+save
+<a href="http://thenounproject.com/noun/save/#icon-No9016" target="_blank">Save</a> designed by <a href="http://thenounproject.com/crisdobbins" target="_blank">Cris Dobbins</a> from The Noun Project
+
+load
+<a href="http://thenounproject.com/noun/cloud-download/#icon-No2786" target="_blank">Cloud Download</a> designed by <a href="http://thenounproject.com/somerandomdude" target="_blank">P.J. Onori</a> from The Noun Project
+
+cloudSave
+<a href="http://thenounproject.com/noun/cloud-upload/#icon-No2633" target="_blank">Cloud Upload</a> designed by <a href="http://thenounproject.com/adamwhitcroft" target="_blank">Adam Whitcroft</a> from The Noun Project
+
+resize
+<a href="http://thenounproject.com/noun/resize/#icon-No5046" target="_blank">Resize</a> designed by <a href="http://thenounproject.com/DmitryBaranovskiy" target="_blank">Dmitry Baranovskiy</a> from The Noun Project
+
+move
+<a href="http://thenounproject.com/noun/move/#icon-No2862" target="_blank">Move</a> designed by <a href="http://thenounproject.com/somerandomdude" target="_blank">P.J. Onori</a> from The Noun Project
+
+delete
+<a href="http://thenounproject.com/noun/delete/#icon-No540" target="_blank">Delete</a>  from The Noun Project
+
+rotate
+<a href="http://thenounproject.com/noun/rotate/#icon-No6772" target="_blank">Rotate</a> designed by <a href="http://thenounproject.com/ARudmann" target="_blank">Andrew Rudmann</a> from The Noun Project
