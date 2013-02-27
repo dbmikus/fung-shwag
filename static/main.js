@@ -26,13 +26,13 @@ var xOffset = 0;
 var yOffset = 0;
 
 var zoomInBtn = new Image;
-zoomIn.src = "static/icons/zoomIn.svg"
+zoomInBtn.src = "static/icons/zoomIn.svg"
 
 var resize = new Image;
 resize.src = "static/icons/resize.svg"
 
 var zoomOutBtn = new Image;
-zoomOut.src = "static/icons/zoomOut.svg"
+zoomOutBtn.src = "static/icons/zoomOut.svg"
 
 var rotate = new Image;
 rotate.src = "static/icons/rotate.svg"
