@@ -93,9 +93,17 @@ app.get("/static/:staticFilename", function (request, response) {
     response.sendfile("static/" + request.params.staticFilename);
 });
 
+//gives the index when navigating to the server
 app.get("/", function (request,response){
     response.sendfile("static/index.html");
 })
+
+
+app.get("/favicon.ico", function (request,response){
+    response.sendfile("favicon.ico");
+})
+
+
 
 function initServer() {
   // When we start the server, we must load the stored data
