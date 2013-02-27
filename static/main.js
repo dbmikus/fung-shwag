@@ -25,14 +25,8 @@ var prevWallCoord = null;
 var xOffset = 0;
 var yOffset = 0;
 
-var zoomInBtn = new Image;
-zoomInBtn.src = "static/icons/zoomIn.svg"
-
 var resize = new Image;
 resize.src = "static/icons/resize.svg"
-
-var zoomOutBtn = new Image;
-zoomOutBtn.src = "static/icons/zoomOut.svg"
 
 var rotate = new Image;
 rotate.src = "static/icons/rotate.svg"
