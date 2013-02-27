@@ -28,7 +28,7 @@ F.drawRectangle = function(ctx, location, orientation, color, dimensions) {
 
 	ctx.fillStyle = color;
 	//draw the object
-	ctx.fillRect(dimensions[0]/2, dimensions[1]/2, dimensions[0], dimensions[1]);
+	ctx.fillRect(-dimensions[0]/2, -dimensions[1]/2, dimensions[0], dimensions[1]);
 	//rotate the canvas back in the opposite direction
 	ctx.rotate(-(orientation));
 

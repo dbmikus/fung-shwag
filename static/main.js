@@ -6,7 +6,9 @@ var ctx = canvas.getContext("2d");
 //scale = pixels/foot
 var scale = 30;
 // Walls is of form: {'color': string, 'coordinates': [...]}
-var walls = {'color': 'white', 'coordinates': []};
+var walls = {'status': 'unselected',
+             'color': 'white',
+             'coordinates': []};
 // Rooms hold closed walls segments
 var subrooms = [];
 var roomClosed = false;
@@ -369,6 +371,7 @@ function unscaleDim(x,y){
 
 // Plots the wall coordinates on the map and then draws them
 function plotWall (mouseX, mouseY) {
+    walls.status = 'selected';
     if (prevWallCoord === null) {
         prevWallCoord = scalePoint(mouseX, mouseY);
         drawBlueprint();
@@ -414,20 +417,57 @@ function plotFurniture(x, y) {
     drawBlueprint();
 }
 
+function deleteWallInProgress() {
+    // If we are working on a current wall, then just delete the last
+    // coordinate
+    // We expect that walls.coordinates mod 2 === 0
+    if (walls.coordinates.length > 0) {
+        console.log('should delete');
+        prevWallCoord = walls.coordinates[walls.coordinates.length - 2];
+        walls.coordinates.splice(walls.coordinates.length - 2, 2);
+    }
+    else {
+        prevWallCoord = null;
+    }
+}
+
 function canvasKeyDown(event) {
     var dKey = 68;
     var keyCode = event.keyCode;
 
     // if we hit the "d" key,
     if (keyCode === dKey) {
+        // Go through each finished subroom, and if it is selected, delete it
+        for(var i = 0; i < subrooms.length; i++) {
+            var subroom = subrooms[i];
+            if (subroom.status === 'selected') {
+                subrooms.splice(i,1);
+                i--;
+            }
+        }
 
+        deleteWallInProgress();
+
+        drawBlueprint();
     }
 }
 
+function onPrevWallCoord(x,y) {
+    var unscaled = unscalePoint(prevWallCoord.x, prevWallCoord.y);
+    var leftX = unscaled.x - scale/4;
+    var rightX = unscaled.x + scale/4;
+    var topY = unscaled.y - scale/4;
+    var botY = unscaled.y + scale/4;
+
+    return (leftX <= x && x <= rightX
+            && topY <= y && y <= botY);
+}
+
 function canvasMouseMove(event){
+    var mouseX = event.x;
+    var mouseY = event.y - $("#toolbar").outerHeight(true);
+
     if(currentTool==="placeFurniture"){
-        var mouseX = event.x;
-        var mouseY = event.y - $("#toolbar").outerHeight(true);
         drawBlueprint();
 
         // Round and unround the point to snap it to grid
@@ -438,7 +478,23 @@ function canvasMouseMove(event){
         // TODO: why are dimensions a constant (200, 200)
          F.drawFurniture(psnappedPixels, unscaledDims, 0,
                          furnitureTypes[currentFurniture]['image']);
+    }
 
+    if (prevWallCoord !== null && prevWallCoord !== undefined) {
+        drawBlueprint();
+
+        var unscaled = unscalePoint(prevWallCoord.x, prevWallCoord.y);
+
+        if (onPrevWallCoord(mouseX, mouseY)) {
+            F.drawRectangle(ctx,
+                            [unscaled.x, unscaled.y],
+                            Math.PI/4, 'black',
+                            [scale/2 - 2, 4]);
+            F.drawRectangle(ctx,
+                            [unscaled.x, unscaled.y],
+                            Math.PI*3/4, 'black',
+                            [scale/2 - 2, 4]);
+        }
     }
 }
 
@@ -467,7 +523,17 @@ function canvasOnMouseDown(event) {
     // functioning
     if (!pannedCanvas) {
         if (currentTool === "drawWall") {
-            plotWall(mouseX, mouseY);
+            var wasOnPrev = (prevWallCoord !== null
+                             && prevWallCoord !== undefined
+                             && onPrevWallCoord(mouseX, mouseY));
+            if  (wasOnPrev) {
+                deleteWallInProgress();
+            }
+            // We must store wasOnPrev so that when we delete a coordinate we
+            // don't just readd that coordinate
+            else {
+                plotWall(mouseX, mouseY);
+            }
         }
         // If we turned off the wall drawing function,
         // then it resets the previous wall coordinate
@@ -478,6 +544,8 @@ function canvasOnMouseDown(event) {
         if (currentTool === "placeFurniture") {
             plotFurniture(mouseX, mouseY);
         }
+
+        drawBlueprint();
     }
 }
 
@@ -487,8 +555,11 @@ function toggleWallTool(event) {
     var wallButton = $('#wall_tool');
     if (currentTool === "drawWall") {
         currentTool = "none";
+        walls.status = 'unselected';
         subrooms.push(walls);
-        walls = {'color': 'white', 'coordinates': []};
+        walls = {'status': 'unselected',
+                 'color': 'white',
+                 'coordinates': []};
         prevWallCoord = null;
         wallButton.css("background-color", "");
     } else {
@@ -526,6 +597,7 @@ function returnInt(element){
 function loadFormatRooms(subrooms) {
     return subrooms.map(function (walls) {
         return {
+            'status': 'unselected',
             'color': walls.color,
             'coordinates': walls.coordinates.map(function (point) {
                 // parse the string ints to actual numbers
