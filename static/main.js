@@ -5,7 +5,8 @@ var canvas = document.getElementById("blueprint");
 var ctx = canvas.getContext("2d");
 //scale = pixels/foot
 var scale = 30;
-var walls = [];
+// Walls is of form: {'color': string, 'coordinates': [...]}
+var walls = {'color': 'white', 'coordinates': []};
 // Rooms hold closed walls segments
 var subrooms = [];
 var roomClosed = false;
@@ -60,8 +61,15 @@ for(key in furnitureTypes){
 // End of Global Variables //
 /////////////////////////////
 function main() {
+    // Adding listeners to canvas
     canvas.addEventListener("mousedown", canvasOnMouseDown, false);
-    canvas.addEventListener("mousemove", onMouseMove, false);
+    canvas.addEventListener("mousemove", canvasMouseMove, false);
+    // adding listeners to control driller
+    // Focusing canvas so it can register events
+    // canvas.setAttribute('tabindex','0');
+    // canvas.focus();
+    canvas.addEventListener('keydown', canvasKeyDown, false);
+
     // Adding listeners for all the tool buttons
 
     // Clicking on the wall_tool button toggles the wall drawing function
@@ -200,16 +208,18 @@ function drawButtons() {
 
 function drawWall (walls) {
     // Drawing each wall in our wall array
+    var coords = walls.coordinates;
     var prevCoord = null;
-    ctx.lineWidth= 5;
-    ctx.strokeStyle="white"
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = walls.color;
     ctx.beginPath();
-    for (var i = 0; i<walls.length; i++){
-        var unscaled = unscalePoint(walls[i].x, walls[i].y);
+
+    for (var i = 0; i< coords.length; i++){
+        var unscaled = unscalePoint(coords[i].x, coords[i].y);
         // If there was no previous coordinate, we just move to the first one
         if (prevCoord === null) {
             ctx.moveTo(unscaled.x, unscaled.y);
-            prevCoord = walls[i];
+            prevCoord = coords[i];
         }
         // Otherwise, draw from the previous to the current and then move to
         // the current
@@ -262,7 +272,9 @@ function drawBlueprint() {
     setUpBlueprint();
 
     // Draw all stored, closed-wall shapes
-    subrooms.forEach(drawWall);
+    subrooms.forEach(function (walls) {
+        drawWall(walls);
+    });
     // draw current working open-wall shape
     drawWall(walls);
 
@@ -348,11 +360,13 @@ function checkPanClick(mouseX, mouseY) {
 // Check that the line p1<-->p2 does not intersect any other lines
 // We guarantee that walls.length mod 2 === 0
 // Return true if there is a line intersection
-function checkLineIntersection(p1, p2) {
+function checkLineIntersection(walls, p1, p2) {
     var i;
-    for (i = 0; i < walls.length; i += 2) {
+    var coords = walls.coordinates;
+
+    for (i = 0; i < coords.length; i += 2) {
         var intersection = G.lineIntersection(p1, p2,
-                                              walls[i], walls[i+1]);
+                                              coords[i], coords[i+1]);
         if (intersection !== null) {
             return true;
         }
@@ -389,18 +403,15 @@ function plotWall (mouseX, mouseY) {
 
         // if there is no intersection,
         // then plot the point
-        //if (!checkLineIntersection(prevWallCoord, newWallCoord)) {
+        //if (!checkLineIntersection(walls, prevWallCoord, newWallCoord)) {
         // TODO Temporarily disabled intersection checking. Debug intersection
         if (true) {
-            walls.push(prevWallCoord, newWallCoord);
+            walls.coordinates.push(prevWallCoord, newWallCoord);
             // If we click on the start, close the room and finish
             // drawing walls
-            if (newWallCoord.equals(walls[0])) {
+            if (newWallCoord.equals(walls.coordinates[0])) {
                 roomClosed = true;
                 toggleWallTool();
-                // subrooms.push(walls);
-                // prevWallCoord = null;
-                // walls = [];
             }
             else {
                 prevWallCoord = newWallCoord;
@@ -428,7 +439,17 @@ function plotFurniture(x, y) {
     drawBlueprint();
 }
 
-function onMouseMove(event){
+function canvasKeyDown(event) {
+    var dKey = 68;
+    var keyCode = event.keyCode;
+
+    // if we hit the "d" key,
+    if (keyCode === dKey) {
+
+    }
+}
+
+function canvasMouseMove(event){
     if(currentTool==="placeFurniture"){
         var mouseX = event.x;
         var mouseY = event.y - $("#toolbar").outerHeight(true);
@@ -481,6 +502,10 @@ function onMouseMove(event){
 
 // Mousedown events registered on the canvas
 function canvasOnMouseDown(event) {
+    // Focusing canvas so it can register key events
+    canvas.setAttribute('tabindex','0');
+    canvas.focus();
+
     var mouseX = event.x;
     // the y coordinate is offset by the height of the toolbar above it.
     // This effectively makes it so that mousedown events for the canvas use the
@@ -630,7 +655,7 @@ function toggleWallTool(event) {
     if (currentTool === "drawWall") {
         currentTool = "none";
         subrooms.push(walls);
-        walls = [];
+        walls = {'color': 'white', 'coordinates': []};
         prevWallCoord = null;
         wallButton.css("background-color", "");
     } else {
@@ -667,11 +692,14 @@ function returnInt(element){
 // Adds in object functions so that the point can be used again
 function loadFormatRooms(subrooms) {
     return subrooms.map(function (walls) {
-        return walls.map(function (point) {
-            // parse the string ints to actual numbers
-            return G.point(returnInt(point.x),
-                           returnInt(point.y));
-        });
+        return {
+            'color': walls.color,
+            'coordinates': walls.coordinates.map(function (point) {
+                // parse the string ints to actual numbers
+                return G.point(returnInt(point.x),
+                               returnInt(point.y));
+            })
+        };
     });
 }
 
@@ -727,9 +755,12 @@ function saveFormatPoint(p) {
 // Removes object functions so that the point can be JSONified
 function saveFormatRooms(subrooms) {
     return subrooms.map(function (walls) {
-        return walls.map(function (point) {
-            return saveFormatPoint(point);
-        });
+        return {
+            'color': walls.color,
+            'coordinates': walls.coordinates.map(function (point) {
+                return saveFormatPoint(point);
+            })
+        };
     });
 }
 
