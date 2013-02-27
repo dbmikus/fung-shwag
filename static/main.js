@@ -15,6 +15,7 @@ var furniture = [];
 // [starting X coord, starting y coord, ending x cooord, ending y coord]
 var currentTool = "none";
 var currentFurniture = "none";
+var currentlySelectedFurniture = -1;
 //used for creating walls
 var prevWallCoord = null;
 //the offset of the current view from the origin
@@ -51,7 +52,7 @@ for(key in furnitureTypes){
     var temp = new Image();
     temp.src = furnitureTypes[key]["path"];
     furnitureTypes[key]["image"] = temp;
-    furnitureTypes[key].dimensions = G.point(3,3);
+    furnitureTypes[key].dimensions = G.point(6,3);
 }
 
 
@@ -220,15 +221,39 @@ function drawWall (walls) {
     ctx.closePath();
 }
 
+function drawFurnitureButtons(furn){
+    var p = furn.location;
+    var unscaledP = unscalePoint(p.x, p.y);
+    var unscaledDims = unscaleDim(furn.dimensions.x, furn.dimensions.y);
+    var innerIcon = getInnerIconPosition(furn);
+
+    F.drawCircle(ctx, [innerIcon[0],innerIcon[2]],"red",[0,scale/2]);
+
+    F.drawCircle(ctx,[(innerIcon[0]+innerIcon[1])/2,
+                      (innerIcon[2]+innerIcon[3])/2], "purple",[0,scale/2]);
+
+    F.drawCircle(ctx,[innerIcon[1]+20,
+                      (innerIcon[2]+innerIcon[3])/2], "yellow",[0,scale/2]);
+
+    F.drawCircle(ctx,[innerIcon[1],
+                      innerIcon[3]], "green",[0,scale/2]);
+
+}
+
+
 // Draws an array of furniture objects
 function drawFurniture(furniture) {
-    furniture.forEach(function (furn) {
+    furniture.forEach(function (furn,index) {
         var p = furn.location;
         var unscaledP = unscalePoint(p.x, p.y);
         var unscaledDims = unscaleDim(furn.dimensions.x, furn.dimensions.y);
 
-        // TODO why are dimensions a constant?
-        F.drawFurniture(unscaledP, unscaledDims, 0, furn.image);
+        F.drawFurniture(unscaledP, unscaledDims, furn.orientation, furn.image);
+
+        if (index === currentlySelectedFurniture){
+            drawFurnitureButtons(furn)
+        }
+
     });
 }
 
@@ -394,12 +419,12 @@ function plotFurniture(x, y) {
                    'path': furnitureTypes[currentFurniture].path,
                    'image': furnitureTypes[currentFurniture].image,
                    'location': snappedPoint,
+                   'orientation': 0,
                    'dimensions': furnitureTypes[currentFurniture].dimensions};
 
     furniture.push(furnObj);
     currentFurniture = "none";
     currentTool = "none";
-
     drawBlueprint();
 }
 
@@ -419,6 +444,39 @@ function onMouseMove(event){
                          furnitureTypes[currentFurniture]['image']);
 
     }
+    if(currentTool==="moveFurniture"){
+        var mouseX = event.x;
+        var mouseY = event.y - $("#toolbar").outerHeight(true);
+        drawBlueprint();
+
+        // Round and unround the point to snap it to grid
+        var pscaled = scalePoint(mouseX, mouseY);
+        var psnappedPixels = unscalePoint(pscaled.x, pscaled.y);
+        var scaledDims = furniture[currentlySelectedFurniture].dimensions;
+        var unscaledDims = unscaleDim(scaledDims.x, scaledDims.y);
+        F.drawFurniture(psnappedPixels, unscaledDims, 
+                furniture[currentlySelectedFurniture]["orientation"],
+                furniture[currentlySelectedFurniture]['image']);
+    }
+
+    if(currentTool==="rotateFurniture"){
+        var mouseX = event.x;
+        var mouseY = event.y - $("#toolbar").outerHeight(true);
+        drawBlueprint();
+        var p = furniture[currentlySelectedFurniture].location;
+        var unscaledP = unscalePoint(p.x, p.y);
+        var unscaledDims = unscaleDim(
+            furniture[currentlySelectedFurniture].dimensions.x,
+            furniture[currentlySelectedFurniture].dimensions.y);
+        var angle = Math.atan((unscaledP.y-mouseY)/
+            (unscaledP.x-mouseX));
+
+        F.drawFurniture(unscaledP, unscaledDims, 
+                angle,
+                furniture[currentlySelectedFurniture]['image']);
+    }
+
+
 }
 
 // Mousedown events registered on the canvas
@@ -436,13 +494,14 @@ function canvasOnMouseDown(event) {
     // cooresponds to a pan button
     var pannedCanvas = checkPanClick(mouseX, mouseY);
 
-
     // If we panned the canvas, we shouldn't draw a wall part.
     // You should be able to click on the pan buttons even with the wall tool
     // functioning
     if (!pannedCanvas) {
         if (currentTool === "drawWall") {
+            currentlySelectedFurniture = -1;
             plotWall(mouseX, mouseY);
+            return;
         }
         // If we turned off the wall drawing function,
         // then it resets the previous wall coordinate
@@ -452,8 +511,116 @@ function canvasOnMouseDown(event) {
 
         if (currentTool === "placeFurniture") {
             plotFurniture(mouseX, mouseY);
+            return;
         }
+        if (currentTool === "moveFurniture"){
+            furniture[currentlySelectedFurniture]["location"] 
+                    = scalePoint(mouseX,mouseY);
+            currentTool = "none";
+            drawBlueprint();
+            return;
+        }
+
+        if (currentTool === "rotateFurniture"){
+            var p = furniture[currentlySelectedFurniture].location;
+            var unscaledP = unscalePoint(p.x, p.y);
+            var angle = Math.atan((unscaledP.y-mouseY)/
+                (unscaledP.x-mouseX));
+
+            furniture[currentlySelectedFurniture]["orientation"]
+                = angle;
+            currentTool = "none";
+            drawBlueprint();
+            return;
+        }
+
+
+        if(currentlySelectedFurniture!==-1){
+            // first set up coordinates for the centers of all 4 buttons
+            var innerIcon = getInnerIconPosition(furniture[currentlySelectedFurniture]);
+            var DelCoords = [innerIcon[0],innerIcon[2]];
+            var MoveCoords= [(innerIcon[0]+innerIcon[1])/2,
+                            (innerIcon[2]+innerIcon[3])/2];
+            var RotateCoords= [innerIcon[1]+20,
+                            (innerIcon[2]+innerIcon[3])/2];
+            var ResizeCoords= [innerIcon[1],innerIcon[3]];
+            var radius = scale/2;
+
+            //check for clicks
+
+            //clicked the delete button
+            if(distance(DelCoords[0],DelCoords[1],mouseX,mouseY)<radius){
+                furniture.splice(currentlySelectedFurniture,1);
+                currentlySelectedFurniture= -1;
+                drawBlueprint();
+                return;
+            }
+            //clicked the move button
+            if(distance(MoveCoords[0],MoveCoords[1],mouseX,mouseY)<radius){
+                currentTool = "moveFurniture";
+                return;
+            }
+            //clicked the rotate button
+            if(distance(RotateCoords[0],RotateCoords[1],mouseX,mouseY)<radius){
+                currentTool = "rotateFurniture";
+                return;
+            }
+            //clicked the resize button
+            if(distance(ResizeCoords[0],ResizeCoords[1],mouseX,mouseY)<radius){
+                alert("resize");
+                return;
+            }
+
+
+
+
+        }
+
+
+
+        // check for selecting furniture
+        var selectedOne = false;
+        furniture.forEach(function (furn,index) {
+            var innerPos = getInnerIconPosition(furn);
+            if(mouseX> innerPos[0] && mouseX < innerPos[1]
+            && mouseY> innerPos[2] && mouseY < innerPos[3] ){
+                currentlySelectedFurniture = index;
+                selectedOne = true;
+                drawBlueprint();
+                return
+            }
+        });
+        if (selectedOne=== false){
+            currentlySelectedFurniture = -1;
+            drawBlueprint();
+        }
+
+
+
+
     }
+
+
+}
+
+function distance (x,y,a,b){
+    return Math.sqrt( Math.pow(x-a,2)+Math.pow(y-b,2));
+
+}
+
+
+// returns the position of the inner icon
+// [left, right, top, bottom]
+function getInnerIconPosition(furn){
+    var fX = (furn.location.x+xOffset)*scale;
+    var fY = (furn.location.y+yOffset)*scale;
+    var squareWidth = Math.min(furn.dimensions.x,furn.dimensions.y);
+    squareWidth = squareWidth *scale;
+    var left = fX- (squareWidth)/2;
+    var right= fX+ (squareWidth)/2;
+    var top  = fY- (squareWidth)/2;
+    var btm  = fY+ (squareWidth)/2;
+    return [left,right,top,btm];
 }
 
 
