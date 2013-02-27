@@ -4,6 +4,10 @@ var G = (function () {
 
 var G = {};
 
+G.roundTo = function(toBase, val) {
+    return Math.round((val) / toBase) * (toBase);
+}
+
 G.point = function (x, y) {
     var point = {"x": x, "y": y};
 
