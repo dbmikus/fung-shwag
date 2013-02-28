@@ -286,9 +286,8 @@ function drawFurniture(furniture) {
         F.drawFurniture(unscaledP, unscaledDims, furn.orientation, furn.image);
 
         if (index === currentlySelectedFurniture){
-            drawFurnitureButtons(furn)
+            drawFurnitureButtons(furn);
         }
-
     });
 }
 
@@ -429,9 +428,7 @@ function plotWall (mouseX, mouseY) {
 
         // if there is no intersection,
         // then plot the point
-        //if (!checkLineIntersection(walls, prevWallCoord, newWallCoord)) {
-        // TODO Temporarily disabled intersection checking. Debug intersection
-        if (true) {
+        if (!checkLineIntersection(walls, prevWallCoord, newWallCoord)) {
             walls.coordinates.push(prevWallCoord, newWallCoord);
             // If we click on the start, close the room and finish
             // drawing walls

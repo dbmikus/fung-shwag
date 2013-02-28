@@ -59,12 +59,14 @@ G.lineIntersection = function(p1, p2, p3, p4) {
         var yInter = a1*p3.x + b1;
         var interPoint = G.point(p3.x, yInter);
 
-        if (G.pbetween(interPoint, p3, p4)) {
+        if (G.pbetween(interPoint, p1, p2)
+            && G.pbetween(interPoint, p3, p4)) {
             return interPoint;
         } else {
             return null;
         }
     }
+
 
     // One or both of the lines are vertical
     if (p2.x - p1.x === 0 || p4.x - p3.x === 0) {
@@ -94,49 +96,48 @@ G.lineIntersection = function(p1, p2, p3, p4) {
         }
     }
     // The lines are non-vertical, so they are cartesian functions
-    else {
+    else
         // Solving for slope
         var a1 = (p2.y - p1.y) / (p2.x - p1.x);
-        var a2 = (p4.y - p3.y) / (p4.x - p3.x);
+    var a2 = (p4.y - p3.y) / (p4.x - p3.x);
 
-        // Solving for y-axis intersection
-        var b1 = p1.y - a1*p1.x;
-        var b2 = p3.y - a2*p3.x;
+    // Solving for y-axis intersection
+    var b1 = p1.y - a1*p1.x;
+    var b2 = p3.y - a2*p3.x;
 
-        // if slopes are equal, then just check if y offsets are equal
-        if (a1 === a2) {
-            if (b1 === b2) {
-                // If either p1 or p2 lies between p3 and p4, it is not allowed
-                if (G.pbetween(p1, p3, p4)) {
-                    return p1;
-                }
-                if (G.pbetween(p2, p3, p4)) {
-                    return p2;
-                }
-                return null;
+    // if slopes are equal, then just check if y offsets are equal
+    if (a1 === a2) {
+        if (b1 === b2) {
+            // If either p1 or p2 lies between p3 and p4, it is not allowed
+            if (G.pbetween(p1, p3, p4)) {
+                return p1;
             }
-            // Lines are parallel but do not have same y offset, so they can never
-            // intersect
-            else {
-                return null;
+            if (G.pbetween(p2, p3, p4)) {
+                return p2;
             }
+            return null;
         }
-        // If slopes aren't equal, we set y1 = y2 and solve for x
-        // this is: x = (b2 - b1) / (a1 - a2)
+        // Lines are parallel but do not have same y offset, so they can never
+        // intersect
         else {
-            var xInter = (b2 - b1) / (a1 - a2);
-            var yInter = a1*xInter + b1;
-            var pInter = G.point(xInter, yInter);
+            return null;
+        }
+    }
+    // If slopes aren't equal, we set y1 = y2 and solve for x
+    // this is: x = (b2 - b1) / (a1 - a2)
+    else {
+        var xInter = (b2 - b1) / (a1 - a2);
+        var yInter = a1*xInter + b1;
+        var pInter = G.point(xInter, yInter);
 
-            // This found point must be within both line segments
-            if (G.pbetween(pInter, p1, p2)
-                && G.pbetween(pInter, p3, p4)) {
-                return pInter;
-            }
-            // The point lies along the lines, but not along the line segments
-            else {
-                return null;
-            }
+        // This found point must be within both line segments
+        if (G.pbetween(pInter, p1, p2)
+            && G.pbetween(pInter, p3, p4)) {
+            return pInter;
+        }
+        // The point lies along the lines, but not along the line segments
+        else {
+            return null;
         }
     }
 }
