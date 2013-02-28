@@ -250,6 +250,8 @@ function drawFurnitureButtons(furn){
     var unscaledP = unscalePoint(p.x, p.y);
     var unscaledDims = unscaleDim(furn.dimensions.x, furn.dimensions.y);
     var innerIcon = getInnerIconPosition(furn);
+	
+	
 
     F.drawCircle(ctx, [innerIcon[0],innerIcon[2]],"red",[0,scale/2]);
 	ctx.drawImage(delButton, innerIcon[0] -scale/3, innerIcon[2]-scale/3,
@@ -270,9 +272,6 @@ function drawFurnitureButtons(furn){
                       innerIcon[3]], "green",[0,scale/2]);
 	ctx.drawImage(resize, innerIcon[1]-scale/3, innerIcon[3] - scale/3,
 					scale*.66,scale*.66);
-
-
-
 }
 
 
