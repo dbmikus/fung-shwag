@@ -406,6 +406,11 @@ function scalePoint(x, y) {
                    Math.round(y/scale) - yOffset);
 }
 
+function noRoundScalePoint(x, y) {
+    return G.point((x/scale) - xOffset,
+                   (y/scale) - yOffset);
+}
+
 function unscalePoint(x,y) {
     return G.point((x + xOffset) * scale,
                    (y + yOffset) * scale);
@@ -507,7 +512,7 @@ function onPrevWallCoord(x,y) {
             && topY <= y && y <= botY);
 }
 
-function canvasMouseMove(event){
+function canvasMouseMove(event) {
     var mouseX = event.x;
     var mouseY = event.y - $("#toolbar").outerHeight(true);
 
@@ -680,7 +685,7 @@ function canvasOnMouseDown(event) {
         }
 
 
-        if(currentlySelectedFurniture!==-1) {
+        if(currentlySelectedFurniture !== -1) {
             // first set up coordinates for the centers of all 4 buttons
             var innerIcon = getInnerIconPosition(furniture[currentlySelectedFurniture]);
             var DelCoords = [innerIcon[0],innerIcon[2]];
@@ -714,6 +719,54 @@ function canvasOnMouseDown(event) {
             if(distance(ResizeCoords[0],ResizeCoords[1],mouseX,mouseY)<radius){
                 currentTool = "resizeFurniture";
                 return;
+            }
+        }
+
+        if (currentTool === 'none') {
+            var room = (function () {
+                // Allowed error distance for clicking
+                var epsilon = 10;
+                subrooms.forEach(function (room) {
+                    room.status = 'unselected';
+                    room.color = 'white';
+                });
+
+                for (var i = 0; i < subrooms.length; i++) {
+                    var room = subrooms[i];
+                    var coords = room.coordinates;
+                    // We expect that coordinates is a multiple of 2
+                    for (var j = 0; j < coords.length-1; j += 2) {
+                        if (coords[j] !== undefined && coords[j+1] !== undefined) {
+                            var p1 = unscalePoint(coords[j].x, coords[j].y);
+                            var p1R = G.point(G.roundTo(10, p1.x),
+                                              G.roundTo(10, p1.y));
+                            var p2 = unscalePoint(coords[j+1].x, coords[j+1].y);
+                            var p2R = G.point(G.roundTo(10, p2.x),
+                                              G.roundTo(10, p2.y));
+                            var mp = G.point(mouseX, mouseY);
+                            var mpR = G.point(G.roundTo(10, mp.x),
+                                              G.roundTo(10, mp.y));
+
+                            var interP = null;
+                            if (G.pbetween(mpR, p1R, p2R)) {
+                                interP = G.lineIntersection(G.point(mpR.x-epsilon/2,
+                                                                    mpR.y-epsilon/2),
+                                                            G.point(mpR.x+epsilon/2,
+                                                                    mpR.y+epsilon/2),
+                                                            p1R, p2R);
+                            }
+                            if (interP !== null) {
+                                return room;
+                            }
+                        }
+                    }
+                    // didn't find any room line intersection
+                    return null;
+                }})();
+
+            if (room != null) {
+                room.status = 'selected';
+                room.color = 'yellow';
             }
         }
 
