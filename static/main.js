@@ -257,6 +257,8 @@ function drawFurnitureButtons(furn){
     var unscaledP = unscalePoint(p.x, p.y);
     var unscaledDims = unscaleDim(furn.dimensions.x, furn.dimensions.y);
     var innerIcon = getInnerIconPosition(furn);
+	
+	
 
     F.drawCircle(ctx, [innerIcon[0],innerIcon[2]],"red",[0,scale/2]);
 	ctx.drawImage(delButton, innerIcon[0] -scale/3, innerIcon[2]-scale/3,
@@ -277,9 +279,6 @@ function drawFurnitureButtons(furn){
                       innerIcon[3]], "green",[0,scale/2]);
 	ctx.drawImage(resize, innerIcon[1]-scale/3, innerIcon[3] - scale/3,
 					scale*.66,scale*.66);
-
-
-
 }
 
 
@@ -939,19 +938,28 @@ function loadRoom() {
         type: "get",
         url: "/room/"+roomId,
         success: function(data) {
-            if (data.room['subrooms'] === undefined) {
-                subrooms = [];
+            if (data.sucksess){
+                $("#load-input").val("");
+                $("#loadNotification").html('Loaded "'+roomId+'"!');                
+                $("#saveNotification").html('');
+                if (data.room['subrooms'] === undefined) {
+                    subrooms = [];
+                }
+                else {
+                    subrooms = loadFormatRooms(data.room["subrooms"]);
+                }
+                if (data.room['furniture'] === undefined) {
+                    furniture = [];
+                }
+                else {
+                    furniture = loadFormatFurniture(data.room["furniture"]);
+                }
+            }else{
+                $("#load-input").val("");
+                $("#loadNotification").html('"'+roomId+'" could not be found!');
+                $("#saveNotification").html('');
             }
-            else {
-                subrooms = loadFormatRooms(data.room["subrooms"]);
-            }
-            if (data.room['furniture'] === undefined) {
-                furniture = [];
-            }
-            else {
-                furniture = loadFormatFurniture(data.room["furniture"]);
-            }
-            drawBlueprint();
+           drawBlueprint();
         }
     });
 }
@@ -991,7 +999,9 @@ function saveRoom() {
             data: {'sendSubRooms': saveFormatRooms(subrooms),
                    'sendFurniture': saveFormatFurniture(furniture)},
             success: function(data) {
-                // todo on good save
+                $("#saveNotification").html('Saved as "'+ saveName+'"!');
+                $("#loadNotification").html('');
+                $("#save-input").val("");
             }
     });
 }

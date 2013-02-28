@@ -1,0 +1,39 @@
+Fung Shwag
+
+Nathan Hamal   | nhamal
+Dylan Mikus    | dmikus
+Zach Matarasso | zim
+
+===========
+
+
+Javascript (including creating your own objects but not with inheritance)
+	
+	main.js, furnituremaker.js, geometry.js, all use a bunch of different javascript techniques we learned including closures (main.js line 105) and custom objects (geometry.js and furnituremaker.js). We also had furniture and wall objects in main.js.
+
+Canvas
+
+	We use canvas for displaying the blueprint of the room. Examples of this are all over main.js, and can be found in any function that begins with draw (drawBlueprint, drawFurniture, drawFurnitureButtons etc.)
+
+HTML 
+
+	/static/index.html contains the html for our app. We use divs spans, buttons, inputs, unordered lists, svgs drawn as images and headings. Our use of html was relatively simple because we wanted an uncluttered interface.
+
+CSS 
+	Our css uses a bunch of cool methods including selectors (css ln 64, 73). Fixed position for the blueprint, absolute for the sidebar, and relative position for the wrapper. There is also a bunch of other things like hover, and typography stuff for the logo on the topleft.
+
+DOM manipulation
+
+	We use DOM manipulation to complete the furniture selector list on the right of the screen, by iterating through the furniture types object. We also use it to give notifications for when you save and load furniture.
+
+jQuery
+	
+	We use to construct the furniture selector list (lines 133-141 main.js) we also use it to set the click functions for all buttons.
+
+AJAX client 
+
+	The load and save functions fulfill this requirement. (line 865 and line 924 in main .js)
+
+AJAX server 
+
+	app.js is a node server. The whole thing provides an API, and we even have a favicon!

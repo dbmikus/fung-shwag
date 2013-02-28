@@ -137,6 +137,18 @@ F.drawFurniture = function(location, dimensions, orientation, svg){
 	ctx.lineWidth = 4;
     //Rotate the canvas(angle in radians)
 	ctx.rotate(orientation);
+	
+	ctx.fillStyle = 'white';			
+	ctx.font  = "12px Arial" ;
+	ctx.textAlign = "center";
+	ctx.fillText("" + dimensions.x/scale * 3+ " in.", 0,  - dimensions.y/2 +15 );
+	
+	ctx.translate( -dimensions.x/2 + 13 ,0);
+	ctx.rotate(-Math.PI/2); 
+	ctx.fillText("" + dimensions.y /scale * 3 + ' in.', 0,0) ;
+	ctx.rotate(Math.PI/2) ;
+	ctx.translate( dimensions.x/2 - 13 ,0);
+	
 	ctx.strokeRect(-(dimensions.x/2), -(dimensions.y/2)
 		,dimensions.x, dimensions.y)
     // draw it. This assumes the object svg is an image object with svg.source

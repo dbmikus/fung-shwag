@@ -1,0 +1,25 @@
+Finer Tools:
+	Some users felt the tools were not accurate enough, 
+	so we shifted our scale to give the illusion that the user’s
+	had more accurate tools.
+ 
+Button Placement:
+	Some users had difficulty finding the tool to draw walls,
+	and immediately started looking around the right side of the screen,
+	closer to the scrollable list of furniture, and sometimes in the 
+	scrollable list of furniture. To fix this we moved all of the button
+	closer to the right side of the screen.
+	
+Undo Mistakes:
+	It is common for a user to make mistakes when placing walls so
+	we made it so that you could click on the last point you placed 
+	your wall to delete it.
+
+Feedback when Saving:
+	Previously there was no feedback to the user when they saved 
+	their room, and some even forgot what they had just named their
+	room which made it virtually impossible to access. Now the
+	browser navigates to the URL, and the refreshing should be an 
+	obvious cue that they’ve moved. This would allow them to copy
+	their url, and load it at a later time either directly through 
+	their own navigation bar or using the load feature on the app.
