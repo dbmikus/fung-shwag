@@ -46,6 +46,7 @@ app.get("/room/:id", function(request, response){
     console.log(rooms[id]);
     response.send({
         room: room,
+        sucksess: (room !== undefined), 
         success: true
     });
 });
@@ -78,9 +79,6 @@ app.post("/room/:id", function(request, response){
     })
 });
 
-// delete entire list
-app.delete("/room", function(request, response){
-});
 
 
 app.get("/static/icons/:imagename", function (request, response) {
