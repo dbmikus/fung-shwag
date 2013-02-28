@@ -257,8 +257,8 @@ function drawFurnitureButtons(furn){
     var unscaledP = unscalePoint(p.x, p.y);
     var unscaledDims = unscaleDim(furn.dimensions.x, furn.dimensions.y);
     var innerIcon = getInnerIconPosition(furn);
-	
-	
+
+
 
     F.drawCircle(ctx, [innerIcon[0],innerIcon[2]],"red",[0,scale/2]);
 	ctx.drawImage(delButton, innerIcon[0] -scale/3, innerIcon[2]-scale/3,
@@ -727,6 +727,8 @@ function canvasOnMouseDown(event) {
             }
         }
 
+        // Allows us to select walls. Should only happen if we haven't selected
+        // furniture or done some other operation
         if (currentTool === 'none') {
             (function () {
                 for (var i = 0; i < subrooms.length; i++) {
@@ -745,7 +747,7 @@ function canvasOnMouseDown(event) {
 
             var room = (function () {
                 // Allowed error distance for clicking
-                var epsilon = 10;
+                var epsilon = 15;
                 subrooms.forEach(function (room) {
                     room.status = 'unselected';
                     room.color = 'white';
@@ -768,6 +770,10 @@ function canvasOnMouseDown(event) {
                                               G.roundTo(10, mp.y));
 
                             var interP = null;
+                            if (distance(mpR.x, mpR.y, p1R.x, p1R.y) <= epsilon ||
+                                distance(mpR.x, mpR.y, p2R.x, p2R.y) <= epsilon) {
+                                return room;
+                            }
                             if (G.pbetween(mpR, p1R, p2R)) {
                                 interP = G.lineIntersection(G.point(mpR.x-epsilon/2,
                                                                     mpR.y-epsilon/2),
@@ -791,8 +797,6 @@ function canvasOnMouseDown(event) {
             }
         }
 
-
-
         // check for selecting furniture
         var selectedOne = false;
         furniture.forEach(function (furn,index) {
@@ -802,10 +806,10 @@ function canvasOnMouseDown(event) {
                 currentlySelectedFurniture = index;
                 selectedOne = true;
                 drawBlueprint();
-                return
+                return;
             }
         });
-        if (selectedOne=== false){
+        if (selectedOne === false){
             currentlySelectedFurniture = -1;
             drawBlueprint();
         }
@@ -847,6 +851,10 @@ function toggleWallTool(event) {
         wallButton.css("background-color", "");
     } else {
         currentTool = "drawWall";
+        subrooms.forEach(function (room) {
+            room.status = 'unselected';
+            room.color = 'white';
+        });
         wallButton.css("background-color", "white");
     }
 
@@ -940,7 +948,7 @@ function loadRoom() {
         success: function(data) {
             if (data.sucksess){
                 $("#load-input").val("");
-                $("#loadNotification").html('Loaded "'+roomId+'"!');                
+                $("#loadNotification").html('Loaded "'+roomId+'"!');
                 $("#saveNotification").html('');
                 if (data.room['subrooms'] === undefined) {
                     subrooms = [];
