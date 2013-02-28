@@ -228,7 +228,7 @@ function drawWall (walls) {
     ctx.strokeStyle = walls.color;
     ctx.beginPath();
 
-    for (var i = 0; i< coords.length; i++){
+    for (var i = 0; i < coords.length; i++){
         var unscaled = unscalePoint(coords[i].x, coords[i].y);
         // If there was no previous coordinate, we just move to the first one
         if (prevCoord === null) {
@@ -243,6 +243,13 @@ function drawWall (walls) {
     }
     ctx.stroke();
     ctx.closePath();
+
+    if (walls.status === 'selected' && coords.length > 0) {
+        var fc = unscalePoint(coords[0].x, coords[0].y);
+        F.drawCircle(ctx, [fc.x, fc.y], "red", [0,scale/2]);
+	    ctx.drawImage(delButton, fc.x - scale/3, fc.y - scale/3,
+                      scale*.66,  scale*.66);
+    }
 }
 
 function drawFurnitureButtons(furn){
@@ -423,7 +430,6 @@ function unscaleDim(x,y){
 
 // Plots the wall coordinates on the map and then draws them
 function plotWall (mouseX, mouseY) {
-    walls.status = 'selected';
     if (prevWallCoord === null) {
         prevWallCoord = scalePoint(mouseX, mouseY);
         drawBlueprint();
@@ -705,7 +711,7 @@ function canvasOnMouseDown(event) {
                 drawBlueprint();
                 return;
             }
-            //clicked the move button
+            // clicked the move button
             if(distance(MoveCoords[0],MoveCoords[1],mouseX,mouseY)<radius){
                 currentTool = "moveFurniture";
                 return;
@@ -723,6 +729,21 @@ function canvasOnMouseDown(event) {
         }
 
         if (currentTool === 'none') {
+            (function () {
+                for (var i = 0; i < subrooms.length; i++) {
+                    if (subrooms[i].status === 'selected'
+                        && subrooms[i].coordinates.length > 0) {
+                        var coords = subrooms[i].coordinates;
+                        // unscaled coordinates
+                        var uc = unscalePoint(coords[0].x, coords[0].y);
+                        if (distance(uc.x, uc.y, mouseX, mouseY) < scale/2) {
+                            subrooms.splice(i,1);
+                            return;
+                        }
+                    }
+                }
+            })();
+
             var room = (function () {
                 // Allowed error distance for clicking
                 var epsilon = 10;
@@ -760,9 +781,10 @@ function canvasOnMouseDown(event) {
                             }
                         }
                     }
-                    // didn't find any room line intersection
-                    return null;
-                }})();
+                }
+                // didn't find any room line intersection
+                return null;
+            })();
 
             if (room != null) {
                 room.status = 'selected';
