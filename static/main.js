@@ -327,6 +327,7 @@ function checkPanClick(mouseX, mouseY) {
 // Return true if there is a line intersection
 function checkLineIntersection(p1, p2) {
     var i;
+    console.log('\ndo intersection stuff\n=============');
     for (i = 0; i < walls.length; i += 2) {
         var intersection = G.lineIntersection(p1, p2,
                                               walls[i], walls[i+1]);
